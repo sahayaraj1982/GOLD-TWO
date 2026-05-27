@@ -404,47 +404,50 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
     border: 1.5px solid var(--border-dark);
 }
 
+/* ========================================== */
+/* Luxury Premium Screen 1 Login UI Styles    */
+/* ========================================== --> */
 #passwordOverlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--app-bg); z-index: 2000;
+    background: linear-gradient(135deg, #1f2d3d, #101720); z-index: 2000;
     display: flex; justify-content: center; align-items: center;
 }
 .login-card {
-    background: var(--premium-white);
-    padding: 30px 24px;
-    border-radius: 24px;
+    background: #ffffff;
+    padding: 35px 25px;
+    border-radius: 30px;
     text-align: center;
-    border: 3px solid var(--border-dark);
+    border: 3.5px solid #2c3e50;
     width: 88%;
     max-width: 380px;
-    box-shadow: 0 12px 0 var(--border-dark), 0 20px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 0 #2c3e50, 0 30px 40px rgba(0,0,0,0.4);
 }
 
 .whatsapp-btn-container {
     margin-top: 25px;
-    background: #f0f2f5;
-    border: 2.5px solid var(--border-dark);
+    background: #f8f9fa;
+    border: 2.5px solid #2c3e50;
     border-radius: 16px;
     padding: 15px;
     display: block;
     text-decoration: none;
-    box-shadow: 0 5px 0 var(--border-dark);
+    box-shadow: 0 5px 0 #2c3e50;
     transition: all 0.1s ease;
 }
 .whatsapp-btn-container:active {
     transform: translateY(4px);
-    box-shadow: 0 1px 0 var(--border-dark);
+    box-shadow: 0 1px 0 #2c3e50;
 }
 .whatsapp-logo-svg {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     fill: #25D366;
     display: inline-block;
     margin-bottom: 6px;
 }
 .finger-pointer-3d {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     margin: 8px auto 0 auto;
     display: block;
     animation: fingerBounce 0.8s infinite alternate;
@@ -461,7 +464,6 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 .pdf-table th { background: #1f2d3d; color: white; padding: 12px; border: 1px solid #ddd; }
 .pdf-table td { padding: 12px; text-align: center; border: 1px solid #ddd; }
 
-/* ஜெனரல் படிவத்திற்கு கீழ் உள்ள ட்ரான்ஸாக்‌ஷன் பட்டியல் வடிவமைப்பு */
 .general-entries-table-title {
     margin-top: 20px;
     text-align: left;
@@ -473,28 +475,31 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 }
 </style>
 </head>
-<body class="">
+<body>
 
 <div id="loading">டேட்டா SAVE...</div>
 
 <div id="passwordOverlay">
     <div class="login-card">
-        <h2 style="color:#1c1e21; margin-top:0; font-weight: 900; font-size: 30px; letter-spacing:0.5px;">GOOD DAY</h2>
-        <p style="color: #616770; font-size: 14px; margin-bottom:25px;">Please enter your security password to continue</p>
+        <div style="font-size: 45px; margin-bottom: 10px;">👑</div>
+        <h2 style="color:#1c1e21; margin:0; font-weight: 900; font-size: 32px; letter-spacing:1px; background: linear-gradient(45deg, #1f2d3d, #d4af37); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">GOOD DAY</h2>
+        <p style="color: #616770; font-size: 13px; font-weight: bold; margin-bottom:25px; text-transform: uppercase; letter-spacing: 0.5px;">Security Authentication</p>
         
-        <label style="color:#1c1e21; font-size:13px; display:block; text-align:left; font-weight:bold; letter-spacing:0.5px;">PASSWORD</label>
-        <input type="password" id="appPassword" placeholder="••••••••" style="text-align:center; font-size:22px; letter-spacing:4px; padding:15px; margin-top:6px; margin-bottom:20px;">
+        <div style="text-align: left; margin-bottom: 6px;">
+            <label style="color:#2c3e50; font-size:12px; font-weight:900; letter-spacing:1px;">SECURITY PASSWORD</label>
+        </div>
+        <input type="password" id="appPassword" placeholder="••••" style="text-align:center; font-size:26px; letter-spacing:6px; padding:14px; margin-top:0; margin-bottom:20px; border: 3px solid #2c3e50; border-radius: 14px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.08);">
         
-        <button class="btn-3d" onclick="verifyAppPassword()" style="width:100%; height: auto; background:linear-gradient(145deg, #ffd700, #d4af37); color:#000; font-size: 18px; font-weight:900; box-shadow: 0 6px 0 var(--border-dark); border-color: var(--border-dark);">
-            LOGIN
+        <button class="btn-3d" onclick="verifyAppPassword()" style="width:100%; height: auto; padding: 15px; background: linear-gradient(145deg, #ffd700, #d4af37); color:#000; font-size: 18px; font-weight:900; border-radius: 14px; box-shadow: 0 6px 0 #4a3b23; border-color: #2c3e50;">
+            LOG IN TO SYSTEM
         </button>
-        <p id="passError" style="color:var(--premium-red); display:none; margin-top:12px; font-weight: bold;">Invalid Password! Please try again.</p>
+        <p id="passError" style="color:var(--premium-red); display:none; margin-top:15px; font-weight: 900; font-size: 14px; background: #ffebee; padding: 8px; border-radius: 8px; border: 1px solid var(--premium-red);">❌ Invalid Password! Try Again.</p>
         
         <a id="adminWhatsAppLink" href="https://wa.me/919361203202" target="_blank" class="whatsapp-btn-container">
             <svg class="whatsapp-logo-svg" viewBox="0 0 24 24">
                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.488 1.451 5.416 1.452 5.346 0 9.701-4.35 9.704-9.692.002-2.588-1.004-5.02-2.833-6.851C17.048 2.232 14.611 1.23 12.02 1.23c-5.353 0-9.709 4.35-9.712 9.693-.001 1.983.518 3.921 1.503 5.642l-1.007 3.676 3.766-.988zM17.81 14.4c-.3-.149-1.776-.876-2.046-.974-.269-.099-.465-.149-.663.149-.198.299-.764.974-.937 1.172-.173.198-.347.223-.647.074-.3-.149-1.265-.466-2.41-1.487-.893-.797-1.496-1.782-1.671-2.081-.174-.299-.018-.462.13-.61.134-.133.3-.347.45-.52.149-.174.199-.298.299-.497.1-.198.05-.371-.025-.52-.075-.149-.662-1.596-.91-2.188-.242-.584-.487-.506-.663-.514-.17-.008-.367-.01-.563-.01-.197 0-.518.074-.789.371-.271.297-1.036 1.014-1.036 2.475s1.062 2.871 1.21 3.07c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.776-.726 2.025-1.424.25-.699.25-1.298.175-1.423-.075-.125-.27-.199-.57-.348z"/>
             </svg>
-            <span style="color:var(--premium-green); font-size:14px; font-weight:800; display:block; letter-spacing:0.5px;">ADMIN WHATSAPP SUPPORT</span>
+            <span style="color:#2e7d32; font-size:14px; font-weight:800; display:block; letter-spacing:0.5px;">ADMIN WHATSAPP SUPPORT</span>
             <span style="color:#616770; font-size:12px; font-weight:bold; display:block; margin-top:2px;">91 - 9361203202</span>
             
             <svg class="finger-pointer-3d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -808,7 +813,6 @@ let isEditingGeneral = false;
 let folderPlusMode = false;
 let pressTimer;
 
-// கேலண்டர் பில்டர் பராமீட்டர்ஸ்
 let calendarStartDate = "";
 
 const languageData = {
@@ -874,7 +878,6 @@ const languageData = {
     }
 };
 
-// பேனரில் நேரடி தேதி மற்றும் நேரத்தை நாள்-மாதம்-ஆண்டு வடிவில் காட்டும் செயல்பாடு
 function updateLiveDateTime() {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -895,10 +898,20 @@ function updateLiveDateTime() {
 }
 setInterval(updateLiveDateTime, 1000);
 
+// பாஸ்வேர்டு சரிபார்ப்பு லாஜிக் திருத்தப்பட்டுள்ளது
 function verifyAppPassword() {
     const inputPass = document.getElementById("appPassword").value;
-    showLoading(true);
+    
+    if(inputPass === "admin123" || inputPass === "SAHA1020" || inputPass === "9361") { 
+        document.getElementById("passwordOverlay").style.display = "none";
+        document.getElementById("appContent").style.display = "block";
+        initAppLayoutSettings();
+        runAdvancedSearchFilter();
+        fetchFromCloud(); // பின்னணியில் கிளவுட் டேட்டாவை சிங்க் செய்கிறது
+        return;
+    }
 
+    showLoading(true);
     fetch(CLOUD_URL, {
         method: "POST",
         redirect: "follow",
@@ -911,8 +924,7 @@ function verifyAppPassword() {
         if(cloudUsers && cloudUsers.length > 0) {
             isValid = cloudUsers.some(u => u.password === inputPass);
         }
-        if(inputPass === "admin123" || inputPass === "SAHA1020" || inputPass === "9361") { isValid = true; }
-
+        
         if(isValid) {
             document.getElementById("passwordOverlay").style.display = "none";
             document.getElementById("appContent").style.display = "block";
@@ -923,14 +935,7 @@ function verifyAppPassword() {
         showLoading(false);
     })
     .catch(err => {
-        if(inputPass === "admin123" || inputPass === "SAHA1020" || inputPass === "9361") {
-            document.getElementById("passwordOverlay").style.display = "none";
-            document.getElementById("appContent").style.display = "block";
-            initAppLayoutSettings();
-            runAdvancedSearchFilter();
-        } else {
-            document.getElementById("passError").style.display = "block";
-        }
+        document.getElementById("passError").style.display = "block";
         showLoading(false);
     });
 }
@@ -1113,12 +1118,10 @@ function applyLanguageLabels(lang) {
     document.querySelector(".set-fontSize").innerText = dict.set_fontSize;
 }
 
-// கேலண்டர் பட்டனை கிளிக் செய்யும் போது ஹிடன் இன் புட்டை இயக்குதல்
 function triggerCalendarDatePicker() {
     document.getElementById("calendarStartDateFilter").click();
 }
 
-// கேலண்டர் பில்டர் அப்ளை செய்தல் (தேதி முதல் இன்று வரை)
 function applyCalendarFilter(selectedDate) {
     if(!selectedDate) {
         calendarStartDate = "";
@@ -1129,14 +1132,12 @@ function applyCalendarFilter(selectedDate) {
         document.getElementById("activeCalendarRangeDisplay").style.display = "block";
         document.getElementById("activeCalendarRangeDisplay").innerText = `கட்டுப்பாடு பில்டர்: ${formatDate(calendarStartDate)} முதல் இன்று (${formatDate(todayStr)}) வரை`;
     }
-    // கேலண்டர் மாறியவுடன் டேஷ்போர்டை மட்டும் ரீ-ரெண்டர் செய்கிறோம் (சர்ச் பாக்ஸ் இதற்குள் கட்டுப்படாது)
     runAdvancedSearchFilter();
 }
 
-// அட்வான்ஸ்டு மாஸ்டர் சர்ச் பில்டர் (Date to Date, User, Mobile, Discrimination, Credit/Debit)
 function runAdvancedSearchFilter() {
     const searchText = document.getElementById("advSearchText").value.toLowerCase().trim();
-    const searchType = document.getElementById("advSearchType").value; // both, credit, debit
+    const searchType = document.getElementById("advSearchType").value;
     
     const genListDiv = document.getElementById("generalEntryList");
     genListDiv.innerHTML = "";
@@ -1145,14 +1146,10 @@ function runAdvancedSearchFilter() {
     let totalCreditAmt = 0; let totalDebitAmt = 0; let totalBalanceAmt = 0;
     let redUsersCount = 0; let redTotalCredit = 0; let redTotalDebit = 0; let redTotalBalance = 0;
     
-    let todayStr = new Date().toISOString().split("T")[0];
-
-    // டேஷ்போர்டு கார்டுகளின் கணிப்பு (கேலண்டர் பில்டருக்கு கட்டுப்படும்)
     users.forEach(u => {
         let bal = 0; let cr = 0; let db = 0;
         if(u.transactions) {
             u.transactions.forEach(t => {
-                // கேலண்டர் பில்டர் செக் (கார்டுகளுக்கு மட்டும்)
                 if(calendarStartDate && t.date < calendarStartDate) return;
                 
                 let isNote = (!t.credit && !t.debit);
@@ -1186,20 +1183,16 @@ function runAdvancedSearchFilter() {
     document.getElementById("redTotalDebit").innerText = "₹ " + redTotalDebit.toLocaleString();
     document.getElementById("redTotalBalance").innerText = "₹ " + redTotalBalance.toLocaleString();
 
-    // ஜெனரல் என்ட்ரிகள் பட்டியல் தேடல் பில்டரிங் (சர்ச் பட்டன் கேலண்டருக்குள் கட்டுப்படாது)
     let filteredGeneral = generalEntries.filter(ge => {
-        // 1. வகை பில்டர் (Credit/Debit/Both)
         if(searchType === 'credit' && (!ge.credit || Number(ge.credit) === 0)) return false;
         if(searchType === 'debit' && (!ge.debit || Number(ge.debit) === 0)) return false;
         
-        // 2. டெக்ஸ்ட் பில்டர் (User/Mobile/Discrimination/Date)
         if(searchText !== "") {
             let matchText = ge.desc.toLowerCase().includes(searchText) || 
                             ge.date.includes(searchText) || 
                             formatDate(ge.date).includes(searchText) ||
                             (ge.mobile && ge.mobile.includes(searchText));
             
-            // பயனர் மொபைல் எண் மேட்ச் ஆனால் இந்த ஜெனரல் என்ட்ரியை காட்ட வேண்டும்
             let matchUserMobile = false;
             users.forEach(u => {
                 if(u.mobile && u.mobile.includes(searchText) && ge.mobile && ge.mobile.includes(searchText)) {
@@ -1219,7 +1212,6 @@ function runAdvancedSearchFilter() {
             let realGeIdx = generalEntries.indexOf(ge);
             let card = document.createElement("div");
             
-            // வெறும் தேதி மட்டும் உள்ள என்ட்ரி என்றால் கலர் மற்றும் வடிவமைப்பு தேவையில்லை
             let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
             
             if(isDateOnly) {
@@ -1277,7 +1269,6 @@ function renderUserListOnly() {
         }
     });
 
-    // பிக்சட் பேனர் மதிப்புகளை அப்டேட் செய்தல்
     document.getElementById("ulBannerTotalUsers").innerText = totalUsersCount;
     document.getElementById("ulBannerTotalBalance").innerText = "₹ " + totalBalanceAmt.toLocaleString();
     document.getElementById("ulBannerRedUsers").innerText = redUsersCount;
@@ -1370,7 +1361,6 @@ function goBack(){
     renderUserListOnly();
 }
 
-// ஜெனரல் என்ட்ரி படிவம் திறத்தல் (கீழே இன்லைன் ஹிஸ்டரி பட்டியலுடன்)
 function openGeneralEntryForm() {
     folderPlusMode = false;
     document.getElementById("entryFormTitle").innerText = "GENERAL ENTRY";
@@ -1389,17 +1379,14 @@ function openGeneralEntryForm() {
     document.getElementById("entryPopup").style.display = "flex";
 }
 
-// ஜெனரல் படிவத்திற்கு கீழ் உள்ள என்ட்ரிகளை வரிசையாகக் காட்டும் செயல்பாடு
 function renderInlineFormHistoryTable() {
     const tbody = document.getElementById("popupFormInlineTableBody");
     tbody.innerHTML = "";
     
-    // நகல் எடுத்து புதிய தேதியின் அடிப்படையில் மேலிருந்து கீழாகக் காட்டுகிறது
     let records = [...generalEntries];
     records.sort((a,b) => new Date(b.date) - new Date(a.date));
     
     records.forEach(ge => {
-        // வெறும் தேதி எண்ட்ரியாக இருந்தால் தனிதன்மை பில்டரிங்
         let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
         let r = document.createElement("tr");
         
@@ -1431,7 +1418,6 @@ function saveTransaction(){
         if(folderPlusMode) {
             users[currentUser].transactions.push({ date: d, desc: desc, credit: c, debit: deb });
         } else {
-            // முற்றிலும் ஒரு ஜெனரலாகத் தான் பதிய வேண்டும், மொபைல் எண்ணுடன்
             generalEntries.push({ date: d, desc: desc, credit: c, debit: deb, mobile: mob });
         }
     } else {
@@ -1444,4 +1430,27 @@ function saveTransaction(){
 
     saveLocal();
     if(!folderPlusMode && editIndex === null) {
-        // ஜெனரல் படிவத்தில் இருந்தால் 
+        renderInlineFormHistoryTable();
+        document.getElementById("tDesc").value = ""; document.getElementById("tCredit").value = ""; document.getElementById("tDebit").value = "";
+    } else {
+        closeEntryForm();
+    }
+    
+    if(currentUser !== null) { renderTransactions(); } else { runAdvancedSearchFilter(); }
+}
+
+function renderTransactions(){
+    let u = users[currentUser];
+    u.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    document.getElementById("profName").innerText = u.name;
+    document.getElementById("profMobile").innerText = u.mobile || "No Mobile";
+    document.getElementById("profBalance").innerText = "Bal: ₹" + getBalance(u).toLocaleString();
+    
+    const tableBody = document.getElementById("transactionTable");
+    tableBody.innerHTML = "";
+    
+    let curBal = 0, display = [];
+    u.transactions.forEach((tx, originalIndex) => {
+        let isNote = (!tx.credit && !tx.debit);
+        if(!isNo
