@@ -925,6 +925,9 @@ setInterval(updateLiveDateTime, 1000);
 function verifyAppPassword() {
     const inputPass = document.getElementById("appPassword").value.trim();
     
+    // லோக்கல் ஸ்டோரேஜில் உள்ள தற்போதைய பயனர்களின் பட்டியலை லேட்டஸ்டாக புதுப்பிக்கிறது
+    users = JSON.parse(localStorage.getItem("financeUsers")) || [];
+
     // 1. மாஸ்டர் பாஸ்வேர்டுகள் சரிபார்ப்பு
     if(inputPass === "admin123" || inputPass === "SAHA1020" || inputPass === "9361") { 
         document.getElementById("passwordOverlay").style.display = "none";
@@ -935,13 +938,23 @@ function verifyAppPassword() {
         return;
     }
 
-    // 2. உள்ளூர் (Local Storage) பயனர்களின் பாஸ்வேர்டுகள் சரிபார்ப்பு
-    let localValid = Array.isArray(users) && users.some(u => u && u.password === inputPass);
-    if(localValid) {
+    // 2. அட்மின் யூஏயில் (Local Storage) உருவாக்கப்பட்டு சேமிக்கப்பட்டுள்ள வாடிக்கையாளர்களின் பாஸ்வேர்டு சரிபார்ப்பு
+    let matchedUserIndex = -1;
+    if (Array.isArray(users)) {
+        for (let i = 0; i < users.length; i++) {
+            if (users[i] && users[i].password === inputPass) {
+                matchedUserIndex = i;
+                break;
+            }
+        }
+    }
+
+    if (matchedUserIndex !== -1) {
+        // பாஸ்வேர்டு பொருந்தினால், நேரடியாக அந்த பயனர் ஃபோல்டருக்குள் அழைத்துச் செல்கிறது
         document.getElementById("passwordOverlay").style.display = "none";
         document.getElementById("appContent").style.display = "block";
         initAppLayoutSettings();
-        runAdvancedSearchFilter();
+        openUser(matchedUserIndex); 
         fetchFromCloud();
         return;
     }
@@ -956,21 +969,31 @@ function verifyAppPassword() {
     })
     .then(res => res.json())
     .then(cloudResponse => {
-        let isValid = false;
+        let cloudMatchedIdx = -1;
         if(cloudResponse && Array.isArray(cloudResponse.users)) {
-            isValid = cloudResponse.users.some(u => u && u.password === inputPass);
-        }
-        
-        if(isValid) {
-            if(cloudResponse.users) users = cloudResponse.users;
+            users = cloudResponse.users;
             if(cloudResponse.generalEntries) generalEntries = cloudResponse.generalEntries;
             localStorage.setItem("financeUsers", JSON.stringify(users));
             localStorage.setItem("financeGeneralEntries", JSON.stringify(generalEntries));
             
+            for (let i = 0; i < users.length; i++) {
+                if (users[i] && users[i].password === inputPass) {
+                    cloudMatchedIdx = i;
+                    break;
+                }
+            }
+        }
+        
+        if (inputPass === "admin123" || inputPass === "SAHA1020" || inputPass === "9361") {
             document.getElementById("passwordOverlay").style.display = "none";
             document.getElementById("appContent").style.display = "block";
             initAppLayoutSettings();
             runAdvancedSearchFilter();
+        } else if (cloudMatchedIdx !== -1) {
+            document.getElementById("passwordOverlay").style.display = "none";
+            document.getElementById("appContent").style.display = "block";
+            initAppLayoutSettings();
+            openUser(cloudMatchedIdx);
         } else {
             document.getElementById("passError").style.display = "block";
         }
@@ -1033,7 +1056,7 @@ async function fetchFromCloud() {
         }
     } catch(e) { console.error(e); }
     initAppLayoutSettings();
-    runAdvancedSearchFilter();
+    if(currentUser !== null) { renderTransactions(); } else { runAdvancedSearchFilter(); }
 }
 
 function formatDate(d){ 
@@ -1156,4 +1179,272 @@ function applyLanguageLabels(lang) {
     document.querySelectorAll(".th-cr").forEach(el => el.innerText = dict.th_cr);
     document.querySelectorAll(".th-db").forEach(el => el.innerText = dict.th_db);
     document.querySelectorAll(".th-bal").forEach(el => el.innerText = dict.th_bal);
-    document.querySelectorAll(".th-user").forEach
+    document.querySelectorAll(".th-user").forEach(el => el.innerText = dict.th_user);
+    
+    document.querySelector(".lbl-totalTxTitle").innerText = dict.lbl_totalTxTitle;
+    document.querySelector(".set-dashTitle").innerText = dict.set_dashTitle;
+    document.querySelector(".set-fontTitle").innerText = dict.set_fontTitle;
+    document.querySelector(".set-fontSize").innerText = dict.set_fontSize;
+}
+
+function triggerCalendarDatePicker() {
+    document.getElementById("calendarStartDateFilter").click();
+}
+
+function applyCalendarFilter(selectedDate) {
+    if(!selectedDate) {
+        calendarStartDate = "";
+        document.getElementById("activeCalendarRangeDisplay").style.display = "none";
+    } else {
+        calendarStartDate = selectedDate;
+        let todayStr = new Date().toISOString().split("T")[0];
+        document.getElementById("activeCalendarRangeDisplay").style.display = "block";
+        document.getElementById("activeCalendarRangeDisplay").innerText = `கட்டுப்பாடு பில்டர்: ${formatDate(calendarStartDate)} முதல் இன்று (${formatDate(todayStr)}) வரை`;
+    }
+    runAdvancedSearchFilter();
+}
+
+function runAdvancedSearchFilter() {
+    const searchText = document.getElementById("advSearchText").value.toLowerCase().trim();
+    const searchType = document.getElementById("advSearchType").value;
+    
+    const genListDiv = document.getElementById("generalEntryList");
+    genListDiv.innerHTML = "";
+
+    let totalUsersCount = users.length;
+    let totalCreditAmt = 0; let totalDebitAmt = 0; let totalBalanceAmt = 0;
+    let redUsersCount = 0; let redTotalCredit = 0; let redTotalDebit = 0; let redTotalBalance = 0;
+    
+    users.forEach(u => {
+        let bal = 0; let cr = 0; let db = 0;
+        if(u && u.transactions) {
+            u.transactions.forEach(t => {
+                if(calendarStartDate && t.date < calendarStartDate) return;
+                
+                let isNote = (!t.credit && !t.debit);
+                if(!isNote) {
+                    cr += Number(t.credit || 0);
+                    db += Number(t.debit || 0);
+                    bal += (Number(t.credit || 0) - Number(t.debit || 0));
+                }
+            });
+        }
+        totalCreditAmt += cr; totalDebitAmt += db; totalBalanceAmt += bal;
+        if(isRed(u)) { 
+            redUsersCount++; redTotalCredit += cr; redTotalDebit += db; redTotalBalance += bal; 
+        }
+    });
+
+    let genCr = 0, genDb = 0;
+    generalEntries.forEach(ge => {
+        if(ge) {
+            if(calendarStartDate && ge.date < calendarStartDate) return;
+            genCr += Number(ge.credit || 0);
+            genDb += Number(ge.debit || 0);
+        }
+    });
+    
+    totalCreditAmt += genCr;
+    totalDebitAmt += genDb;
+    totalBalanceAmt += (genCr - genDb);
+
+    document.getElementById("totalUsers").innerText = totalUsersCount;
+    document.getElementById("totalCredit").innerText = "₹ " + totalCreditAmt.toLocaleString();
+    document.getElementById("totalDebit").innerText = "₹ " + totalDebitAmt.toLocaleString();
+    document.getElementById("totalBalance").innerText = "₹ " + totalBalanceAmt.toLocaleString();
+
+    document.getElementById("redUsersCount").innerText = redUsersCount;
+    document.getElementById("redTotalCredit").innerText = "₹ " + redTotalCredit.toLocaleString();
+    document.getElementById("redTotalDebit").innerText = "₹ " + redTotalDebit.toLocaleString();
+    document.getElementById("redTotalBalance").innerText = "₹ " + redTotalBalance.toLocaleString();
+
+    let filteredGeneral = generalEntries.filter(ge => {
+        if(!ge) return false;
+        if(searchType === 'credit' && (!ge.credit || Number(ge.credit) === 0)) return false;
+        if(searchType === 'debit' && (!ge.debit || Number(ge.debit) === 0)) return false;
+        
+        if(searchText !== "") {
+            let matchText = (ge.desc && ge.desc.toLowerCase().includes(searchText)) || 
+                            (ge.date && ge.date.includes(searchText)) || 
+                            (ge.date && formatDate(ge.date).includes(searchText)) ||
+                            (ge.mobile && ge.mobile.includes(searchText));
+            return matchText;
+        }
+        return true;
+    });
+
+    filteredGeneral.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    let genBal = genCr - genDb;
+    document.getElementById("generalSectionTitle").innerHTML = `பொதுவான என்ட்ரிகள் (General Entries) <br><span style="font-size:13px; color:var(--text-dark);">[வரவு: ₹${genCr.toLocaleString()} | செலவு: ₹${genDb.toLocaleString()} | இருப்பு: ₹${genBal.toLocaleString()}]</span>`;
+
+    if(filteredGeneral.length > 0) {
+        document.getElementById("generalSectionTitle").style.display = "block";
+        filteredGeneral.forEach((ge) => {
+            let realGeIdx = generalEntries.indexOf(ge);
+            let card = document.createElement("div");
+            
+            let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
+            if(isDateOnly) {
+                card.className = "user-card";
+                card.style.background = "var(--premium-white)";
+                card.style.borderLeft = "none";
+            } else {
+                card.className = "user-card general-row";
+            }
+            
+            setupLongPress(card, function() {
+                openActionPopup("General Entry: " + (ge.desc || "Record"), () => editGeneralTransaction(realGeIdx), () => deleteGeneralTransaction(realGeIdx), false);
+            });
+
+            let amtDisplay = "";
+            let colorStyle = "";
+            if(!isDateOnly) {
+                amtDisplay = Number(ge.credit) > 0 ? `+ ₹${Number(ge.credit).toLocaleString()}` : `- ₹${Number(ge.debit).toLocaleString()}`;
+                colorStyle = Number(ge.credit) > 0 ? "color:var(--premium-green);" : "color:var(--premium-red);";
+            }
+
+            card.innerHTML = `
+                <div class="row">
+                    <div>
+                        <b style="font-size:17px; color:#4a151b;">${ge.desc || (isDateOnly ? 'தேதி பதிவு' : '')}</b>
+                        ${ge.mobile ? `<br><small style="color:var(--premium-green); font-weight:bold;">Mobile: ${ge.mobile}</small>` : ''}
+                        <br><small style="color:#616770;">${formatDate(ge.date)}</small>
+                    </div>
+                    <div style="font-weight:bold; font-size:17px; ${colorStyle}">${amtDisplay}</div>
+                </div>`;
+            genListDiv.appendChild(card);
+        });
+    } else {
+        document.getElementById("generalSectionTitle").style.display = "block"; 
+    }
+    applySavedToggleSettings();
+}
+
+function renderUserListOnly() {
+    const search = document.getElementById("userListSearch").value.toLowerCase();
+    const listDiv = document.getElementById("explicitUserList");
+    listDiv.innerHTML = "";
+
+    let totalUsersCount = users.length;
+    let totalBalanceAmt = 0;
+    let redUsersCount = 0;
+    let redTotalBalance = 0;
+
+    users.forEach(u => {
+        if(u) {
+            let b = getBalance(u);
+            totalBalanceAmt += b;
+            if(isRed(u)) {
+                redUsersCount++;
+                redTotalBalance += b;
+            }
+        }
+    });
+
+    document.getElementById("ulBannerTotalUsers").innerText = totalUsersCount;
+    document.getElementById("ulBannerTotalBalance").innerText = "₹ " + totalBalanceAmt.toLocaleString();
+    document.getElementById("ulBannerRedUsers").innerText = redUsersCount;
+    document.getElementById("ulBannerRedBalance").innerText = "₹ " + redTotalBalance.toLocaleString();
+
+    let filteredUsers = users.filter(u => u && (u.name.toLowerCase().includes(search) || (u.mobile && u.mobile.includes(search))));
+    filteredUsers.sort((a,b)=> isRed(b) - isRed(a));
+
+    filteredUsers.forEach((u)=>{
+        let realIdx = users.indexOf(u);
+        let card = document.createElement("div");
+        card.className = "user-card" + (isRed(u) ? " redbg" : "");
+        
+        card.onclick = () => openUser(realIdx);
+        
+        setupLongPress(card, function() {
+            openActionPopup("User Folder: " + u.name, null, null, true, () => deleteUserFolderCompletely(realIdx));
+        });
+        
+        card.innerHTML = `
+            <div class="row">
+                <div>
+                    <b style="font-size:18px; color:#4a151b;">${u.name}</b><br>
+                    <small style="font-size:13px; color:#616770;">${u.mobile || 'No Mobile'}</small>
+                </div>
+                <div style="font-weight:bold; font-size:18px; color:var(--premium-green);">₹ ${getBalance(u).toLocaleString()}</div>
+            </div>`;
+        listDiv.appendChild(card);
+    });
+}
+
+function openUserListScreen() {
+    document.getElementById("mainScreen").classList.add("hidden");
+    document.getElementById("userListScreen").classList.remove("hidden");
+    document.getElementById("userListSearch").value = "";
+    renderUserListOnly();
+}
+
+function closeUserListScreen() {
+    document.getElementById("userListScreen").classList.add("hidden");
+    document.getElementById("mainScreen").classList.remove("hidden");
+    runAdvancedSearchFilter();
+}
+
+function deleteUserFolderCompletely(realIdx) {
+    closeActionPopup();
+    if(confirm(`Are you absolutely sure you want to DELETE "${users[realIdx].name}" and all their history?`)) {
+        users.splice(realIdx, 1);
+        saveLocal();
+        renderUserListOnly();
+    }
+}
+
+function setupLongPress(element, callback) {
+    element.addEventListener('touchstart', function(e) { pressTimer = window.setTimeout(function() { callback(); }, 600); }, {passive: true});
+    element.addEventListener('touchend', function(e) { if (pressTimer) clearTimeout(pressTimer); }, {passive: true});
+    element.addEventListener('mousedown', function(e) { pressTimer = window.setTimeout(function() { callback(); }, 600); });
+    element.addEventListener('mouseup', function(e) { if (pressTimer) clearTimeout(pressTimer); });
+}
+
+function openUser(i){
+    currentUser = i;
+    document.getElementById("userListScreen").classList.add("hidden");
+    document.getElementById("mainScreen").classList.add("hidden");
+    document.getElementById("userScreen").classList.remove("hidden");
+    renderTransactions();
+    setupLongPress(document.getElementById("profBalance"), function() { openSharePopup(); });
+}
+
+function openUserFolderPlusEntry() {
+    folderPlusMode = true; 
+    document.getElementById("entryFormTitle").innerText = "NEW ENTRY -> " + users[currentUser].name;
+    document.getElementById("generalFormMobileRow").style.display = "none";
+    document.getElementById("formHistoryTitle").style.display = "none";
+    document.getElementById("popupFormInlineTableBody").parentElement.parentElement.style.display = "none";
+    
+    document.getElementById("tDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("tMobileNumber").value = "";
+    document.getElementById("tDesc").value = ""; 
+    document.getElementById("tCredit").value = ""; 
+    document.getElementById("tDebit").value = "";
+    editIndex = null;
+    document.getElementById("entryPopup").style.display = "flex";
+}
+
+function goBack(){
+    document.getElementById("userScreen").classList.add("hidden");
+    
+    // பயனர் நேரடியாக லாகின் மூலம் வந்தவரா அல்லது அட்மின் திரை வழியாக வந்தவரா என்பதை கண்டறிய
+    let isDirectUserLogin = (document.getElementById("passwordOverlay").style.display === "none" && 
+                             document.getElementById("mainScreen").classList.contains("hidden") && 
+                             document.getElementById("userListScreen").classList.contains("hidden"));
+
+    if (isDirectUserLogin && currentUser !== null) {
+        // வாடிக்கையாளர் அவர்களின் தனிப்பட்ட பாஸ்வேர்டு மூலம் வந்திருந்தால், BACK அழுத்தும்போது மீண்டும் லாகின் திரைக்கே செல்லும்
+        appSignOut();
+    } else {
+        document.getElementById("userListScreen").classList.remove("hidden");
+        currentUser = null;
+        renderUserListOnly();
+    }
+}
+
+function openGeneralEntryForm() {
+    folderPlusMode = false;
+    document.getElementById("entryF
