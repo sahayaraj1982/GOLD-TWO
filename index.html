@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title id="pageTitle">Finance Manager Pro V 2.1</title>
+<title id="pageTitle">Finance Manager Pro V 2.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
@@ -507,7 +507,7 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
     <div class="login-card">
         <div style="font-size: 45px; margin-bottom: 10px;">👑</div>
         <h2 style="color:#1c1e21; margin:0; font-weight: 900; font-size: 32px; letter-spacing:1px; background: linear-gradient(45deg, #4a151b, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">GOOD DAY</h2>
-        <p style="color: #616770; font-size: 13px; font-weight: bold; margin-bottom:25px; text-transform: uppercase; letter-spacing: 0.5px;">Security Authentication (V 2.1)</p>
+        <p style="color: #616770; font-size: 13px; font-weight: bold; margin-bottom:25px; text-transform: uppercase; letter-spacing: 0.5px;">Security Authentication (V 2.2)</p>
         
         <div style="text-align: left; margin-bottom: 6px;">
             <label style="color:#4a151b; font-size:12px; font-weight:900; letter-spacing:1px;">SECURITY PASSWORD</label>
@@ -536,7 +536,7 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 
 <div class="wrapper" id="appContent" style="display:none;">
     <header>
-        <div id="appHeaderTitle" class="header-title-main">Finance Manager Pro V 2.1</div>
+        <div id="appHeaderTitle" class="header-title-main">Finance Manager Pro V 2.2</div>
         <div id="liveDateTimeBanner" class="header-datetime-banner"></div>
         <button class="signout-header-btn" onclick="appSignOut()">Sign Out</button>
     </header>
@@ -1083,7 +1083,7 @@ function isRed(u) {
 }
 
 function initAppLayoutSettings() {
-    let savedTitle = localStorage.getItem("customAppTitleText") || "Finance Manager Pro";
+    let savedTitle = localStorage.getItem("customAppTitleText") || "Finance Manager Pro V 2.2";
     document.getElementById("appHeaderTitle").innerText = savedTitle;
     document.getElementById("pdfAppTitle").innerText = savedTitle;
     document.getElementById("customAppTitleInput").value = savedTitle;
@@ -1430,13 +1430,11 @@ function openUserFolderPlusEntry() {
 function goBack(){
     document.getElementById("userScreen").classList.add("hidden");
     
-    // பயனர் நேரடியாக லாகின் மூலம் வந்தவரா அல்லது அட்மின் திரை வழியாக வந்தவரா என்பதை கண்டறிய
     let isDirectUserLogin = (document.getElementById("passwordOverlay").style.display === "none" && 
                              document.getElementById("mainScreen").classList.contains("hidden") && 
                              document.getElementById("userListScreen").classList.contains("hidden"));
 
     if (isDirectUserLogin && currentUser !== null) {
-        // வாடிக்கையாளர் அவர்களின் தனிப்பட்ட பாஸ்வேர்டு மூலம் வந்திருந்தால், BACK அழுத்தும்போது மீண்டும் லாகின் திரைக்கே செல்லும்
         appSignOut();
     } else {
         document.getElementById("userListScreen").classList.remove("hidden");
@@ -1447,4 +1445,402 @@ function goBack(){
 
 function openGeneralEntryForm() {
     folderPlusMode = false;
-    document.getElementById("entryF
+    document.getElementById("entryFormTitle").innerText = "GENERAL ENTRY";
+    document.getElementById("generalFormMobileRow").style.display = "block";
+    document.getElementById("formHistoryTitle").style.display = "block";
+    document.getElementById("popupFormInlineTableBody").parentElement.parentElement.style.display = "block";
+
+    document.getElementById("tDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("tMobileNumber").value = "";
+    document.getElementById("tDesc").value = ""; 
+    document.getElementById("tCredit").value = ""; 
+    document.getElementById("tDebit").value = "";
+    editIndex = null;
+    
+    renderInlineFormHistoryTable();
+    document.getElementById("entryPopup").style.display = "flex";
+}
+
+function renderInlineFormHistoryTable() {
+    const tbody = document.getElementById("popupFormInlineTableBody");
+    tbody.innerHTML = "";
+    
+    let records = [...generalEntries];
+    records.sort((a,b) => new Date(b.date) - new Date(a.date));
+    
+    records.forEach(ge => {
+        if(ge) {
+            let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
+            let r = document.createElement("tr");
+            
+            if(isDateOnly) {
+                r.className = "date-only-row";
+            } else if(Number(ge.credit) > 0) {
+                r.className = "credit-row";
+            } else if(Number(ge.debit) > 0) {
+                r.className = "debit-row";
+            }
+            
+            r.innerHTML = `<td style="padding:6px;">${formatDate(ge.date)}</td>
+                           <td style="padding:6px;">${ge.desc || (isDateOnly ? 'தேதி பதிவு' : '')}</td>
+                           <td style="padding:6px;">${ge.credit || ""}</td>
+                           <td style="padding:6px;">${ge.debit || ""}</td>`;
+            tbody.appendChild(r);
+        }
+    });
+}
+
+function closeEntryForm(){ document.getElementById("entryPopup").style.display = "none"; editIndex = null; isEditingGeneral = false; folderPlusMode = false;}
+
+function saveTransaction(){
+    let d = document.getElementById("tDate").value, desc = document.getElementById("tDesc").value;
+    let c = document.getElementById("tCredit").value, deb = document.getElementById("tDebit").value;
+    let mob = document.getElementById("tMobileNumber").value.trim();
+    if(!d) return alert("Date is required!");
+
+    if(editIndex === null) {
+        if(folderPlusMode) {
+            users[currentUser].transactions.push({ date: d, desc: desc, credit: c, debit: deb });
+        } else {
+            generalEntries.push({ date: d, desc: desc, credit: c, debit: deb, mobile: mob });
+        }
+    } else {
+        if(isEditingGeneral) {
+            generalEntries[editIndex] = { date: d, desc: desc, credit: c, debit: deb, mobile: mob };
+        } else {
+            users[currentUser].transactions[editIndex] = { date: d, desc: desc, credit: c, debit: deb }; 
+        }
+    }
+
+    saveLocal();
+    if(!folderPlusMode && editIndex === null) {
+        renderInlineFormHistoryTable();
+        document.getElementById("tDesc").value = ""; document.getElementById("tCredit").value = ""; document.getElementById("tDebit").value = "";
+    } else {
+        closeEntryForm();
+    }
+    
+    if(currentUser !== null) { renderTransactions(); } else { runAdvancedSearchFilter(); }
+}
+
+function renderTransactions(){
+    let u = users[currentUser];
+    u.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    document.getElementById("profName").innerText = u.name;
+    document.getElementById("profMobile").innerText = u.mobile || "No Mobile";
+    document.getElementById("profBalance").innerText = "Bal: ₹" + getBalance(u).toLocaleString();
+    
+    const tableBody = document.getElementById("transactionTable");
+    tableBody.innerHTML = "";
+    
+    let curBal = 0, display = [];
+    u.transactions.forEach((tx, originalIndex) => {
+        let isNote = (!tx.credit && !tx.debit);
+        if(!isNote) curBal += (Number(tx.credit||0) - Number(tx.debit||0));
+        display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
+    });
+
+    display.reverse();
+
+    display.forEach((tx) => {
+        let isDateOnly = (!tx.desc && !tx.credit && !tx.debit && tx.date);
+        let row = document.createElement("tr");
+        
+        if(isDateOnly) row.className = "date-only-row";
+        else if(Number(tx.credit) > 0) row.className = "credit-row";
+        else if(Number(tx.debit) > 0) row.className = "debit-row";
+        else row.className = "pending-row";
+
+        setupLongPress(row, function() {
+            openActionPopup("History: " + (tx.desc || "Record"), () => editTransaction(tx.actualIdx), () => deleteTransaction(tx.actualIdx), false);
+        });
+
+        row.innerHTML = `<td>${formatDate(tx.date)}</td>
+                         <td>${tx.desc|| (isDateOnly ? 'தேதி பதிவு' : '')}</td>
+                         <td>${tx.credit||""}</td>
+                         <td>${tx.debit||""}</td>
+                         <td><b>${tx.cumulative !== "" && !isDateOnly ? "₹"+tx.cumulative.toLocaleString() : ""}</b></td>`;
+        tableBody.appendChild(row);
+    });
+}
+
+function openAllTransactionsScreen() {
+    document.getElementById("mainScreen").classList.add("hidden");
+    document.getElementById("allTransactionsScreen").classList.remove("hidden");
+    
+    const tableBody = document.getElementById("allTransactionsTableBody");
+    tableBody.innerHTML = "";
+    let combinedList = [];
+    
+    let totalCr = 0; let totalDb = 0;
+
+    users.forEach(u => {
+        if(u && u.transactions) { 
+            u.transactions.forEach(tx => { 
+                let isDateOnly = (!tx.desc && !tx.credit && !tx.debit && tx.date);
+                if(isDateOnly) return;
+
+                combinedList.push({ ...tx, origin: u.name }); 
+                totalCr += Number(tx.credit || 0);
+                totalDb += Number(tx.debit || 0);
+            }); 
+        }
+    });
+    
+    generalEntries.forEach(ge => { 
+        if(ge) {
+            let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
+            if(isDateOnly) return;
+
+            combinedList.push({ ...ge, origin: "General Entry" }); 
+            totalCr += Number(ge.credit || 0);
+            totalDb += Number(ge.debit || 0);
+        }
+    });
+    
+    document.getElementById("atBannerTotalCredit").innerText = "₹ " + totalCr.toLocaleString();
+    document.getElementById("atBannerTotalDebit").innerText = "₹ " + totalDb.toLocaleString();
+    document.getElementById("atBannerTotalBalance").innerText = "₹ " + (totalCr - totalDb).toLocaleString();
+
+    combinedList.sort((a,b) => new Date(b.date) - new Date(a.date));
+    
+    combinedList.forEach(tx => {
+        let row = document.createElement("tr");
+        if(Number(tx.credit) > 0) row.className = "credit-row";
+        else if(Number(tx.debit) > 0) row.className = "debit-row";
+        else row.className = "pending-row";
+        
+        row.innerHTML = `<td>${formatDate(tx.date)}</td>
+                         <td style="font-weight:bold; color:#1c1e21;">${tx.origin}</td>
+                         <td>${tx.desc || ""}</td>
+                         <td>${tx.credit || ""}</td>
+                         <td>${tx.debit || ""}</td>`;
+        tableBody.appendChild(row);
+    });
+}
+
+function closeAllTransactionsScreen() {
+    document.getElementById("allTransactionsScreen").classList.add("hidden");
+    document.getElementById("mainScreen").classList.remove("hidden");
+    runAdvancedSearchFilter();
+}
+
+function editTransaction(i) {
+    let tx = users[currentUser].transactions[i];
+    folderPlusMode = true; isEditingGeneral = false;
+    document.getElementById("generalFormMobileRow").style.display = "none";
+    document.getElementById("formHistoryTitle").style.display = "none";
+    document.getElementById("popupFormInlineTableBody").parentElement.parentElement.style.display = "none";
+    
+    document.getElementById("entryFormTitle").innerText = "Edit Entry";
+    document.getElementById("tDate").value = tx.date;
+    document.getElementById("tDesc").value = tx.desc || "";
+    document.getElementById("tCredit").value = tx.credit || "";
+    document.getElementById("tDebit").value = tx.debit || "";
+    editIndex = i;
+    closeActionPopup();
+    document.getElementById("entryPopup").style.display = "flex";
+}
+
+function editGeneralTransaction(i) {
+    let tx = generalEntries[i];
+    folderPlusMode = false; isEditingGeneral = true;
+    document.getElementById("generalFormMobileRow").style.display = "block";
+    document.getElementById("formHistoryTitle").style.display = "block";
+    document.getElementById("popupFormInlineTableBody").parentElement.parentElement.style.display = "block";
+    
+    document.getElementById("entryFormTitle").innerText = "Edit General Entry";
+    document.getElementById("tDate").value = tx.date;
+    document.getElementById("tMobileNumber").value = tx.mobile || "";
+    document.getElementById("tDesc").value = tx.desc || "";
+    document.getElementById("tCredit").value = tx.credit || "";
+    document.getElementById("tDebit").value = tx.debit || "";
+    editIndex = i;
+    closeActionPopup();
+    renderInlineFormHistoryTable();
+    document.getElementById("entryPopup").style.display = "flex";
+}
+
+function deleteTransaction(i){ 
+    closeActionPopup();
+    if(confirm("Delete this entry?")){ 
+        users[currentUser].transactions.splice(i,1); saveLocal(); renderTransactions(); 
+    } 
+}
+
+function addUser(){
+    let n=prompt("Name:"), m=prompt("Mobile:"), p=prompt("Set Password for this User:");
+    if(n){ users.push({name:n,mobile:m,password:p||"",transactions:[]}); saveLocal(); runAdvancedSearchFilter(); }
+}
+
+function deleteGeneralTransaction(i) {
+    closeActionPopup();
+    if(confirm("Delete this general entry?")){ 
+        generalEntries.splice(i,1); saveLocal(); runAdvancedSearchFilter(); 
+    } 
+}
+
+function openActionPopup(title, onEdit, onDelete, isUserMode, onDeleteUser) {
+    document.getElementById("popupTitle").innerText = title;
+    document.getElementById("actionPopup").style.display = "flex";
+    
+    if(isUserMode) {
+        document.getElementById("editBtn").style.display = "none";
+        document.getElementById("deleteBtn").style.display = "none";
+        document.getElementById("deleteUserBtn").style.display = "block";
+        document.getElementById("deleteUserBtn").onclick = onDeleteUser;
+    } else {
+        document.getElementById("editBtn").style.display = "block";
+        document.getElementById("deleteBtn").style.display = "block";
+        document.getElementById("deleteUserBtn").style.display = "none";
+        document.getElementById("editBtn").onclick = onEdit;
+        document.getElementById("deleteBtn").onclick = onDelete;
+    }
+}
+function closeActionPopup() { document.getElementById("actionPopup").style.display = "none"; }
+function openSharePopup() { document.getElementById("sharePopup").style.display = "flex"; }
+function closeSharePopup() { document.getElementById("sharePopup").style.display = "none"; }
+
+function sendWhatsAppMessage() {
+    let u = users[currentUser];
+    if(!u.mobile) return alert("மொபைல் எண் இல்லை!");
+    let text = `*STATEMENT OF ACCOUNT*%0A%0A👤 *Name:* ${u.name}%0A📊 *Total Balance:* ₹${getBalance(u).toLocaleString()}`;
+    window.open(`https://api.whatsapp.com/send?phone=${u.mobile}&text=${text}`, '_blank');
+    closeSharePopup();
+}
+
+function generatePdfStatement() {
+    let u = users[currentUser];
+    document.getElementById("pdfNameField").innerText = "Name: " + u.name;
+    document.getElementById("pdfMobileField").innerText = "Mobile: " + (u.mobile || "No Mobile");
+    document.getElementById("pdfBalanceField").innerText = "Final Balance: ₹" + getBalance(u).toLocaleString();
+    
+    const pdfBody = document.getElementById("pdfTableBody");
+    pdfBody.innerHTML = "";
+    let curBal = 0;
+    u.transactions.forEach((tx) => {
+        let isNote = (!tx.credit && !tx.debit);
+        if(!isNote) curBal += (Number(tx.credit||0) - Number(tx.debit||0));
+        let row = document.createElement("tr");
+        row.innerHTML = `<td>${formatDate(tx.date)}</td><td>${tx.desc || ''}</td><td>${tx.credit || ''}</td><td>${tx.debit || ''}</td><td><b>${isNote ? "" : "₹" + curBal.toLocaleString()}</b></td>`;
+        pdfBody.appendChild(row);
+    });
+
+    showLoading(true);
+    html2pdf().set({ margin: 10, filename: `${u.name}_Statement.pdf`, html2canvas: { scale: 2, backgroundColor: '#ffffff' }, jsPDF: { format: 'a4', orientation: 'portrait' } }).from(document.getElementById("pdfTemplate")).save().then(() => {
+        showLoading(false); closeSharePopup();
+    });
+}
+
+function exportData() {
+    let backupData = {
+        users: users,
+        generalEntries: generalEntries,
+        appTitle: localStorage.getItem("customAppTitleText") || "Finance Manager Pro V 2.2",
+        language: localStorage.getItem("appLanguagePreference") || "ta"
+    };
+    
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+    let downloadAnchor = document.createElement('a');
+    let dateStr = new Date().toISOString().split('T')[0];
+    
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `Finance_Backup_${dateStr}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+function triggerImport() { document.getElementById("importFileInput").click(); }
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if (importedData.users || importedData.generalEntries) {
+                if (confirm("புதிய டேட்டாவை இம்போர்ட் செய்யவா? இது தற்போது உள்ள டேட்டாவை மாற்றிவிடும்!")) {
+                    if (importedData.users) users = importedData.users;
+                    if (importedData.generalEntries) generalEntries = importedData.generalEntries;
+                    if (importedData.appTitle) localStorage.setItem("customAppTitleText", importedData.appTitle);
+                    if (importedData.language) localStorage.setItem("appLanguagePreference", importedData.language);
+                    
+                    saveLocal();
+                    initAppLayoutSettings();
+                    runAdvancedSearchFilter();
+                    alert("டேட்டா வெற்றிகரமாக இம்போர்ட் செய்யப்பட்டது!");
+                }
+            } else {
+                alert("தவறான கோப்பு வடிவம்!");
+            }
+        } catch (err) { alert("கோப்பை படிப்பதில் பிழை ஏற்பட்டது!"); }
+    };
+    reader.readAsText(file);
+}
+
+function autoBackupAndClearAll() {
+    if (confirm("🚨 எச்சரிக்கை! அனைத்து கணக்குகளையும் நீக்க விரும்புகிறீர்களா? (நீக்குவதற்கு முன் ஆட்டோமேட்டிக்காக பேக்கப் ஃபைல் டவுன்லோடு செய்யப்படும்)")) {
+        exportData();
+        setTimeout(() => {
+            users = []; generalEntries = [];
+            saveLocal(); runAdvancedSearchFilter();
+            alert("அனைத்து டேட்டாக்களும் பாதுகாப்பாக எக்ஸ்போர்ட் செய்யப்பட்டு, முழுமையாக நீக்கப்பட்டுவிட்டன!");
+        }, 1000);
+    }
+}
+
+function openSettings() {
+    document.getElementById("mainScreen").classList.add("hidden");
+    document.getElementById("settingsScreen").classList.remove("hidden");
+}
+
+function closeSettings() {
+    document.getElementById("settingsScreen").classList.add("hidden");
+    document.getElementById("mainScreen").classList.remove("hidden");
+    runAdvancedSearchFilter();
+}
+
+function toggleBoxVisibility() {
+    let config = {};
+    const keys = ['totalUsers', 'totalCredit', 'totalDebit', 'totalBalance', 'redUsersCount', 'redTotalCredit', 'redTotalDebit', 'redTotalBalance'];
+    keys.forEach(k => { config[k] = document.getElementById("switch_" + k).checked; });
+    localStorage.setItem("dashboardToggleConfig", JSON.stringify(config));
+    applySavedToggleSettings();
+}
+
+function applySavedToggleSettings() {
+    let config = JSON.parse(localStorage.getItem("dashboardToggleConfig")) || {};
+    const keys = ['totalUsers', 'totalCredit', 'totalDebit', 'totalBalance', 'redUsersCount', 'redTotalCredit', 'redTotalDebit', 'redTotalBalance'];
+    
+    let generalActiveCount = 0; let redActiveCount = 0;
+
+    keys.forEach(k => {
+        let isChecked = config[k] !== undefined ? config[k] : true; 
+        let boxElement = document.getElementById("box_" + k);
+        if(boxElement) {
+            if(isChecked) {
+                boxElement.style.display = "block";
+                if(['totalUsers', 'totalCredit', 'totalDebit', 'totalBalance'].includes(k)) generalActiveCount++;
+                if(['redUsersCount', 'redTotalCredit', 'redTotalDebit', 'redTotalBalance'].includes(k)) redActiveCount++;
+            } else { boxElement.style.display = "none"; }
+        }
+    });
+
+    document.getElementById("title_generalSec").style.display = (generalActiveCount === 0) ? "none" : "block";
+    document.getElementById("sec_generalDashboard").style.display = (generalActiveCount === 0) ? "none" : "grid";
+    document.getElementById("title_redSec").style.display = (redActiveCount === 0) ? "none" : "block";
+    document.getElementById("sec_redDashboard").style.display = (redActiveCount === 0) ? "none" : "grid";
+}
+
+function changeFontSize(size) {
+    document.documentElement.style.setProperty('--font-multiplier', size === 'large' ? '1.25' : '1.0');
+}
+
+window.onload = function() { initAppLayoutSettings(); runAdvancedSearchFilter(); };
+</script>
+</body>
+</html>
