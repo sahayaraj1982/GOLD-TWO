@@ -8,17 +8,17 @@
 <style>
 :root {
     --premium-white: #ffffff;
-    --app-bg: #f4f6f9;
+    --app-bg: #fcf9f2;
     --text-dark: #1c1e21;
-    --border-dark: #2c3e50;
+    --border-dark: #4a151b;
     
-    /* Default Luxury Theme Colors */
-    --primary-gradient-start: #1f2d3d;
-    --primary-gradient-end: #101720;
+    /* Default Luxury Dark Maroon Theme */
+    --primary-gradient-start: #4a151b;
+    --primary-gradient-end: #1a0507;
     --premium-green: #2e7d32; 
     --premium-red: #c62828;
-    --card-shadow: 0 8px 16px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.04);
-    --btn-shadow: 0 5px 0 #2c3e50;
+    --card-shadow: 0 8px 16px rgba(74, 21, 27, 0.1), 0 4px 6px rgba(0,0,0,0.05);
+    --btn-shadow: 0 5px 0 #1a0507;
     
     --font-multiplier: 1;
     --font-weight-custom: normal;
@@ -26,11 +26,12 @@
 
 /* Theme 2: Royal Gold & Dark Luxury */
 .theme-gold {
-    --app-bg: #fcf9f2;
+    --app-bg: #faf7f0;
     --primary-gradient-start: #2d2416;
     --primary-gradient-end: #1a140c;
-    --border-dark: #4a3b23;
-    --btn-shadow: 0 5px 0 #4a3b23;
+    --border-dark: #d4af37;
+    --btn-shadow: 0 5px 0 #1a140c;
+    --card-shadow: 0 8px 16px rgba(45, 36, 22, 0.1);
 }
 
 body {
@@ -52,20 +53,21 @@ header {
     color: #ffffff;
     text-align: center;
     padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     position: relative;
-    border-bottom: 3.5px solid var(--border-dark);
+    border-bottom: 4px solid var(--border-dark);
 }
 .header-title-main {
     font-size: 24px;
     font-weight: 900;
     letter-spacing: 0.5px;
     margin: 0;
+    color: #ffd700;
 }
 .header-datetime-banner {
     font-size: 13px;
     font-weight: bold;
-    color: #ffd700;
+    color: #ffffff;
     margin-top: 5px;
     letter-spacing: 0.5px;
 }
@@ -122,7 +124,7 @@ body, input, button, table, td, th, select, textarea {
     display: block;
     font-size: 11px;
     text-transform: uppercase;
-    color: #b0bec5;
+    color: #ffd700;
     font-weight: bold;
     margin-bottom: 4px;
 }
@@ -139,11 +141,13 @@ body, input, button, table, td, th, select, textarea {
 .dashboard-section-title {
     padding: 15px 15px 5px 15px;
     margin: 12px 0 2px 0;
-    color: #495057;
-    font-size: 14px;
+    color: var(--primary-gradient-start);
+    font-size: 15px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-weight: bold;
+    font-weight: 900;
+    border-left: 4px solid var(--primary-gradient-start);
+    margin-left: 12px;
 }
 .dashboard {
     display: grid;
@@ -174,7 +178,7 @@ body, input, button, table, td, th, select, textarea {
 }
 .stat-box h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     color: var(--premium-green);
     font-weight: 800;
 }
@@ -248,7 +252,7 @@ body, input, button, table, td, th, select, textarea {
     padding: 12px;
 }
 .btn-3d {
-    background: linear-gradient(145deg, #ffffff, #f0f2f5);
+    background: linear-gradient(145deg, #ffffff, #f9f2f3);
     color: #1c1e21;
     padding: 12px 8px;
     font-size: 13px;
@@ -286,10 +290,10 @@ body, input, button, table, td, th, select, textarea {
 .section-title {
     padding: 15px 15px 5px 15px;
     margin: 15px 0 5px 0;
-    color: #1c1e21;
+    color: var(--primary-gradient-start);
     border-bottom: 2.5px solid var(--border-dark);
-    font-size: 17px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 900;
 }
 .user-card {
     width: calc(100% - 24px);
@@ -322,7 +326,7 @@ body, input, button, table, td, th, select, textarea {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f0f2f5;
+    background: #fdf5f6;
     padding: 12px;
     border-radius: 12px;
     border: 2px solid var(--border-dark);
@@ -372,19 +376,19 @@ input:checked + .slider:before { transform: translateX(24px); }
 
 .lang-btn-group { display: flex; gap: 10px; margin: 10px 0; }
 .lang-btn { flex: 1; padding: 12px; border-radius: 10px; border: 2.5px solid var(--border-dark); background: #fff; color: #1c1e21; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 var(--border-dark); }
-.lang-btn.active { background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end)); color: white; box-shadow: 0 4px 0 #101720; }
+.lang-btn.active { background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end)); color: white; box-shadow: 0 4px 0 var(--border-dark); border-color: var(--border-dark); }
 
 .popup-overlay {
     display: none; position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 1000;
+    background: rgba(0,0,0,0.6); z-index: 1000;
     justify-content: center; align-items: center;
 }
 .popup-content {
     background: var(--premium-white); padding: 25px; border-radius: 24px;
     text-align: center; border: 3px solid var(--border-dark);
     width: 90%; max-width: 420px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
 input[type="date"], input[type="text"], input[type="number"], input[type="password"], select {
     width: 100%; margin: 10px 0; padding: 14px;
@@ -399,7 +403,7 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 
 #loading {
     display: none; position: fixed; top: 15px; right: 15px;
-    background: #1f2d3d; color: #ffffff;
+    background: #4a151b; color: #ffffff;
     padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 10000; font-size: 13px;
     border: 1.5px solid var(--border-dark);
 }
@@ -418,10 +422,10 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
     padding: 35px 25px;
     border-radius: 30px;
     text-align: center;
-    border: 4px solid #7f8c8d; 
+    border: 4px solid #ffd700; 
     width: 88%;
     max-width: 380px;
-    box-shadow: 0 0 20px rgba(127, 140, 141, 0.3), 0 12px 0 #2c3e50, 0 30px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), 0 12px 0 #4a151b, 0 30px 40px rgba(0,0,0,0.5);
 }
 
 .whatsapp-premium-badge {
@@ -479,9 +483,9 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 
 .hidden { display: none !important; }
 #pdfTemplate { background: #ffffff; color: #000000; padding: 30px; font-family: 'Segoe UI', Arial, sans-serif; }
-.pdf-header { border-bottom: 3px solid #1f2d3d; padding-bottom: 15px; text-align: center; margin-bottom: 20px; }
+.pdf-header { border-bottom: 3px solid #4a151b; padding-bottom: 15px; text-align: center; margin-bottom: 20px; }
 .pdf-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-.pdf-table th { background: #1f2d3d; color: white; padding: 12px; border: 1px solid #ddd; }
+.pdf-table th { background: #4a151b; color: white; padding: 12px; border: 1px solid #ddd; }
 .pdf-table td { padding: 12px; text-align: center; border: 1px solid #ddd; }
 
 .general-entries-table-title {
@@ -502,15 +506,15 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 <div id="passwordOverlay">
     <div class="login-card">
         <div style="font-size: 45px; margin-bottom: 10px;">👑</div>
-        <h2 style="color:#1c1e21; margin:0; font-weight: 900; font-size: 32px; letter-spacing:1px; background: linear-gradient(45deg, #4a151b, #7f8c8d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">GOOD DAY</h2>
+        <h2 style="color:#1c1e21; margin:0; font-weight: 900; font-size: 32px; letter-spacing:1px; background: linear-gradient(45deg, #4a151b, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">GOOD DAY</h2>
         <p style="color: #616770; font-size: 13px; font-weight: bold; margin-bottom:25px; text-transform: uppercase; letter-spacing: 0.5px;">Security Authentication</p>
         
         <div style="text-align: left; margin-bottom: 6px;">
-            <label style="color:#2c3e50; font-size:12px; font-weight:900; letter-spacing:1px;">SECURITY PASSWORD</label>
+            <label style="color:#4a151b; font-size:12px; font-weight:900; letter-spacing:1px;">SECURITY PASSWORD</label>
         </div>
-        <input type="password" id="appPassword" placeholder="••••" style="text-align:center; font-size:26px; letter-spacing:6px; padding:14px; margin-top:0; margin-bottom:20px; border: 3px solid #2c3e50; border-radius: 14px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.08);">
+        <input type="password" id="appPassword" placeholder="••••" style="text-align:center; font-size:26px; letter-spacing:6px; padding:14px; margin-top:0; margin-bottom:20px; border: 3px solid #4a151b; border-radius: 14px; box-shadow: inset 0 3px 6px rgba(0,0,0,0.08);">
         
-        <button class="btn-3d" onclick="verifyAppPassword()" style="width:100%; height: auto; padding: 15px; background: linear-gradient(145deg, #ffd700, #d4af37); color:#000; font-size: 18px; font-weight:900; border-radius: 14px; box-shadow: 0 6px 0 #4a3b23; border-color: #2c3e50;">
+        <button class="btn-3d" onclick="verifyAppPassword()" style="width:100%; height: auto; padding: 15px; background: linear-gradient(145deg, #ffd700, #d4af37); color:#000; font-size: 18px; font-weight:900; border-radius: 14px; box-shadow: 0 6px 0 #4a3b23; border-color: #4a151b;">
             LOG IN TO SYSTEM
         </button>
         <p id="passError" style="color:var(--premium-red); display:none; margin-top:15px; font-weight: 900; font-size: 14px; background: #ffebee; padding: 8px; border-radius: 8px; border: 1px solid var(--premium-red);">❌ Invalid Password! Try Again.</p>
@@ -526,11 +530,6 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
             <div style="background: rgba(37, 211, 102, 0.08); padding: 4px 10px; border-radius: 10px; display: inline-block; margin-top: 2px; border: 1px dashed rgba(37, 211, 102, 0.3);">
                 <span style="color:#2e7d32; font-size:13px; font-weight:800; letter-spacing: 0.5px;">+91 9361203202</span>
             </div>
-            
-            <svg class="finger-pointer-3d" viewBox="0 0 24 24" fill="none">
-                <path d="M20 11a2 2 0 0 0-2-2h-1V7.5a2.5 2.5 0 0 0-5 0V9h-1V5.5a2.5 2.5 0 0 0-5 0V12a5 5 0 0 0 10 0v-1h1a2 2 0 0 0 2 2v1a2 2 0 0 0 2-2v-2z" fill="#ffd700" stroke="#1c1e21" stroke-width="2"/>
-                <path d="M7 11V4.5a1.5 1.5 0 0 1 3 0V11M10 9V6.5a1.5 1.5 0 0 1 3 0V9M13 9V7.5a1.5 1.5 0 0 1 3 0V11" stroke="#1c1e21" stroke-width="2"/>
-            </svg>
         </a>
     </div>
 </div>
@@ -606,7 +605,7 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
     <div id="userListScreen" class="hidden">
         <div class="banner-stats-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <button class="btn-3d" onclick="closeUserListScreen()" style="height:auto; padding: 6px 14px; box-shadow:0 3px 0 var(--border-dark);">← Back</button>
+                <button class="btn-3d" onclick="closeUserListScreen()" style="height:auto; padding: 10px 16px; background: #fff; box-shadow:0 3px 0 var(--border-dark);"><b>← BACK</b></button>
                 <h3 style="margin:0; color:#fff; font-size:18px;" class="btn-userList">வாடிக்கையாளர்கள் பட்டியல்</h3>
             </div>
             <div class="banner-stats-grid">
@@ -627,7 +626,7 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
     <div id="userScreen" class="hidden">
         <div class="profile-header">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <button class="btn-3d" onclick="goBack()" style="height:auto; padding: 6px 14px; box-shadow:0 3px 0 var(--border-dark);">← Back</button>
+                <button class="btn-3d" onclick="goBack()" style="height:auto; padding: 10px 16px; background:#fff; box-shadow:0 3px 0 var(--border-dark);"><b>← BACK</b></button>
                 <button class="btn-3d" onclick="openUserFolderPlusEntry()" style="height:auto; padding: 8px 16px; background:linear-gradient(145deg, #ffd700, #d4af37); box-shadow:0 3px 0 var(--border-dark);">+ New Entry</button>
             </div>
             <h2 id="profName"></h2>
@@ -656,7 +655,7 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
     <div id="allTransactionsScreen" class="hidden">
         <div class="banner-stats-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <button class="btn-3d" onclick="closeAllTransactionsScreen()" style="height:auto; padding: 6px 14px; box-shadow:0 3px 0 var(--border-dark);">← Back</button>
+                <button class="btn-3d" onclick="closeAllTransactionsScreen()" style="height:auto; padding: 10px 16px; background:#fff; box-shadow:0 3px 0 var(--border-dark);"><b>← BACK</b></button>
                 <h3 style="margin:0; color:#fff; font-size:18px;" class="lbl-totalTxTitle">அனைத்து கணக்கு பதிவுகள்</h3>
             </div>
             <div class="banner-stats-grid">
@@ -684,14 +683,14 @@ input[type="date"], input[type="text"], input[type="number"], input[type="passwo
 
     <div id="settingsScreen" class="hidden">
         <div class="profile-header">
-            <button class="btn-3d" onclick="closeSettings()" style="float:left; height:auto; padding: 6px 14px; margin-top: -5px; box-shadow:0 3px 0 var(--border-dark);">← Back</button>
+            <button class="btn-3d" onclick="closeSettings()" style="float:left; height:auto; padding: 10px 16px; background:#fff; box-shadow:0 3px 0 var(--border-dark);"><b>← BACK</b></button>
             <h2 class="btn-settings" style="margin-right: 40px;">அமைப்புகள் (Settings)</h2>
         </div>
         
         <div style="padding:15px; max-width: 600px; margin: auto;">
             <h3 style="color:#1c1e21; margin-bottom: 5px; text-transform: uppercase; font-size:14px;">App Theme / வண்ணம் வடிவமைப்பு</h3>
             <div class="lang-btn-group">
-                <button id="themeBtnDefault" class="lang-btn" onclick="switchThemeConfig('default')">Luxury Slate Blue</button>
+                <button id="themeBtnDefault" class="lang-btn" onclick="switchThemeConfig('default')">Luxury Dark Maroon</button>
                 <button id="themeBtnGold" class="lang-btn" onclick="switchThemeConfig('gold')">Royal Dark Gold</button>
             </div>
 
@@ -923,25 +922,18 @@ function updateLiveDateTime() {
 }
 setInterval(updateLiveDateTime, 1000);
 
-// ==========================================
-// பிக்சட் லாகின் சிஸ்டம் (இனி லூப் ஆகாது!)
-// ==========================================
 function verifyAppPassword() {
     const inputPass = document.getElementById("appPassword").value.trim();
     
-    // 1. முதன்மை மாஸ்டர் பாஸ்வேர்டுகள் - அடித்த அடுத்த நொடியே உடனடி லாகின் அனுமதி!
     if(inputPass === "admin123" || inputPass === "SAHA1020" || inputPass === "9361") { 
         document.getElementById("passwordOverlay").style.display = "none";
         document.getElementById("appContent").style.display = "block";
         initAppLayoutSettings();
         runAdvancedSearchFilter();
-        
-        // லாகின் ஆன பிறகு பின்னணியில் கிளவுட் டேட்டாவை சிங்க் செய்யும் (Background Sync)
         fetchFromCloud(); 
         return;
     }
 
-    // 2. உள்ளூர் லோக்கல் மெமரி சரிபார்ப்பு (Emergency Fallback)
     let localValid = users.some(u => u.password === inputPass);
     if(localValid) {
         document.getElementById("passwordOverlay").style.display = "none";
@@ -952,7 +944,6 @@ function verifyAppPassword() {
         return;
     }
 
-    // 3. மாஸ்டர் பாஸ்வேர்டு இல்லையென்றால் மட்டும் கிளவுட் சர்வரில் தேடும்
     showLoading(true);
     fetch(CLOUD_URL, {
         method: "POST",
@@ -1099,10 +1090,16 @@ function switchThemeConfig(theme) {
     localStorage.setItem("appThemeStyleConfig", theme);
     if(theme === 'gold') {
         document.body.className = "theme-gold";
+        document.documentElement.style.setProperty('--primary-gradient-start', '#2d2416');
+        document.documentElement.style.setProperty('--primary-gradient-end', '#1a140c');
+        document.documentElement.style.setProperty('--border-dark', '#d4af37');
         document.getElementById("themeBtnGold").classList.add("active");
         document.getElementById("themeBtnDefault").classList.remove("active");
     } else {
         document.body.className = "";
+        document.documentElement.style.setProperty('--primary-gradient-start', '#4a151b');
+        document.documentElement.style.setProperty('--primary-gradient-end', '#1a0507');
+        document.documentElement.style.setProperty('--border-dark', '#4a151b');
         document.getElementById("themeBtnDefault").classList.add("active");
         document.getElementById("themeBtnGold").classList.remove("active");
     }
@@ -1212,12 +1209,16 @@ function runAdvancedSearchFilter() {
         }
     });
 
+    let genCr = 0, genDb = 0;
     generalEntries.forEach(ge => {
         if(calendarStartDate && ge.date < calendarStartDate) return;
-        totalCreditAmt += Number(ge.credit || 0);
-        totalDebitAmt += Number(ge.debit || 0);
-        totalBalanceAmt += (Number(ge.credit || 0) - Number(ge.debit || 0));
+        genCr += Number(ge.credit || 0);
+        genDb += Number(ge.debit || 0);
     });
+    
+    totalCreditAmt += genCr;
+    totalDebitAmt += genDb;
+    totalBalanceAmt += (genCr - genDb);
 
     document.getElementById("totalUsers").innerText = totalUsersCount;
     document.getElementById("totalCredit").innerText = "₹ " + totalCreditAmt.toLocaleString();
@@ -1238,19 +1239,16 @@ function runAdvancedSearchFilter() {
                             ge.date.includes(searchText) || 
                             formatDate(ge.date).includes(searchText) ||
                             (ge.mobile && ge.mobile.includes(searchText));
-            
-            let matchUserMobile = false;
-            users.forEach(u => {
-                if(u.mobile && u.mobile.includes(searchText) && ge.mobile && ge.mobile.includes(searchText)) {
-                    matchUserMobile = true;
-                }
-            });
-            return matchText || matchUserMobile;
+            return matchText;
         }
         return true;
     });
 
     filteredGeneral.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // ஜெனரல் என்ட்ரி மொத்த பேலன்ஸ் கணக்கீடு தலைப்பில் காட்டுவதற்காக
+    let genBal = genCr - genDb;
+    document.getElementById("generalSectionTitle").innerHTML = `பொதுவான என்ட்ரிகள் (General Entries) <br><span style="font-size:13px; color:var(--text-dark);">[வரவு: ₹${genCr.toLocaleString()} | செலவு: ₹${genDb.toLocaleString()} | இருப்பு: ₹${genBal.toLocaleString()}]</span>`;
 
     if(filteredGeneral.length > 0) {
         document.getElementById("generalSectionTitle").style.display = "block";
@@ -1259,7 +1257,6 @@ function runAdvancedSearchFilter() {
             let card = document.createElement("div");
             
             let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
-            
             if(isDateOnly) {
                 card.className = "user-card";
                 card.style.background = "var(--premium-white)";
@@ -1268,6 +1265,7 @@ function runAdvancedSearchFilter() {
                 card.className = "user-card general-row";
             }
             
+            // ஜெனரல் எண்ட்ரியை லாங் பிரஸ் (அழுத்திப் பிடித்தால்) எடிட்/டெலிட் பாப்-அப் வரும்
             setupLongPress(card, function() {
                 openActionPopup("General Entry: " + (ge.desc || "Record"), () => editGeneralTransaction(realGeIdx), () => deleteGeneralTransaction(realGeIdx), false);
             });
@@ -1282,7 +1280,7 @@ function runAdvancedSearchFilter() {
             card.innerHTML = `
                 <div class="row">
                     <div>
-                        <b style="font-size:17px;">${ge.desc || (isDateOnly ? 'தேதி பதிவு' : '')}</b>
+                        <b style="font-size:17px; color:#4a151b;">${ge.desc || (isDateOnly ? 'தேதி பதிவு' : '')}</b>
                         ${ge.mobile ? `<br><small style="color:var(--premium-green); font-weight:bold;">Mobile: ${ge.mobile}</small>` : ''}
                         <br><small style="color:#616770;">${formatDate(ge.date)}</small>
                     </div>
@@ -1291,7 +1289,7 @@ function runAdvancedSearchFilter() {
             genListDiv.appendChild(card);
         });
     } else {
-        document.getElementById("generalSectionTitle").style.display = "none";
+        document.getElementById("generalSectionTitle").style.display = "block"; 
     }
     applySavedToggleSettings();
 }
@@ -1337,7 +1335,7 @@ function renderUserListOnly() {
         card.innerHTML = `
             <div class="row">
                 <div>
-                    <b style="font-size:18px; color:#1c1e21;">${u.name}</b><br>
+                    <b style="font-size:18px; color:#4a151b;">${u.name}</b><br>
                     <small style="font-size:13px; color:#616770;">${u.mobile || 'No Mobile'}</small>
                 </div>
                 <div style="font-weight:bold; font-size:18px; color:var(--premium-green);">₹ ${getBalance(u).toLocaleString()}</div>
@@ -1452,355 +1450,4 @@ function renderInlineFormHistoryTable() {
     });
 }
 
-function closeEntryForm(){ document.getElementById("entryPopup").style.display = "none"; editIndex = null; isEditingGeneral = false; folderPlusMode = false;}
-
-function saveTransaction(){
-    let d = document.getElementById("tDate").value, desc = document.getElementById("tDesc").value;
-    let c = document.getElementById("tCredit").value, deb = document.getElementById("tDebit").value;
-    let mob = document.getElementById("tMobileNumber").value.trim();
-    if(!d) return alert("Date is required!");
-
-    if(editIndex === null) {
-        if(folderPlusMode) {
-            users[currentUser].transactions.push({ date: d, desc: desc, credit: c, debit: deb });
-        } else {
-            generalEntries.push({ date: d, desc: desc, credit: c, debit: deb, mobile: mob });
-        }
-    } else {
-        if(isEditingGeneral) {
-            generalEntries[editIndex] = { date: d, desc: desc, credit: c, debit: deb, mobile: mob };
-        } else {
-            users[currentUser].transactions[editIndex] = { date: d, desc: desc, credit: c, debit: deb }; 
-        }
-    }
-
-    saveLocal();
-    if(!folderPlusMode && editIndex === null) {
-        renderInlineFormHistoryTable();
-        document.getElementById("tDesc").value = ""; document.getElementById("tCredit").value = ""; document.getElementById("tDebit").value = "";
-    } else {
-        closeEntryForm();
-    }
-    
-    if(currentUser !== null) { renderTransactions(); } else { runAdvancedSearchFilter(); }
-}
-
-function renderTransactions(){
-    let u = users[currentUser];
-    u.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    document.getElementById("profName").innerText = u.name;
-    document.getElementById("profMobile").innerText = u.mobile || "No Mobile";
-    document.getElementById("profBalance").innerText = "Bal: ₹" + getBalance(u).toLocaleString();
-    
-    const tableBody = document.getElementById("transactionTable");
-    tableBody.innerHTML = "";
-    
-    let curBal = 0, display = [];
-    u.transactions.forEach((tx, originalIndex) => {
-        let isNote = (!tx.credit && !tx.debit);
-        if(!isNote) curBal += (Number(tx.credit||0) - Number(tx.debit||0));
-        display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
-    });
-
-    display.reverse();
-
-    display.forEach((tx) => {
-        let isDateOnly = (!tx.desc && !tx.credit && !tx.debit && tx.date);
-        let row = document.createElement("tr");
-        
-        if(isDateOnly) row.className = "date-only-row";
-        else if(Number(tx.credit) > 0) row.className = "credit-row";
-        else if(Number(tx.debit) > 0) row.className = "debit-row";
-        else row.className = "pending-row";
-
-        setupLongPress(row, function() {
-            openActionPopup("History: " + (tx.desc || "Record"), () => editTransaction(tx.actualIdx), () => deleteTransaction(tx.actualIdx), false);
-        });
-
-        row.innerHTML = `<td>${formatDate(tx.date)}</td>
-                         <td>${tx.desc|| (isDateOnly ? 'தேதி பதிவு' : '')}</td>
-                         <td>${tx.credit||""}</td>
-                         <td>${tx.debit||""}</td>
-                         <td><b>${tx.cumulative !== "" && !isDateOnly ? "₹"+tx.cumulative.toLocaleString() : ""}</b></td>`;
-        tableBody.appendChild(row);
-    });
-}
-
-function openAllTransactionsScreen() {
-    document.getElementById("mainScreen").classList.add("hidden");
-    document.getElementById("allTransactionsScreen").classList.remove("hidden");
-    
-    const tableBody = document.getElementById("allTransactionsTableBody");
-    tableBody.innerHTML = "";
-    let combinedList = [];
-    
-    let totalCr = 0; let totalDb = 0;
-
-    users.forEach(u => {
-        if(u.transactions) { 
-            u.transactions.forEach(tx => { 
-                let isDateOnly = (!tx.desc && !tx.credit && !tx.debit && tx.date);
-                if(isDateOnly) return;
-
-                combinedList.push({ ...tx, origin: u.name }); 
-                totalCr += Number(tx.credit || 0);
-                totalDb += Number(tx.debit || 0);
-            }); 
-        }
-    });
-    
-    generalEntries.forEach(ge => { 
-        let isDateOnly = (!ge.desc && !ge.credit && !ge.debit && ge.date);
-        if(isDateOnly) return;
-
-        combinedList.push({ ...ge, origin: "General Entry" }); 
-                totalCr += Number(ge.credit || 0);
-                totalDb += Number(ge.debit || 0);
-    });
-    
-    document.getElementById("atBannerTotalCredit").innerText = "₹ " + totalCr.toLocaleString();
-    document.getElementById("atBannerTotalDebit").innerText = "₹ " + totalDb.toLocaleString();
-    document.getElementById("atBannerTotalBalance").innerText = "₹ " + (totalCr - totalDb).toLocaleString();
-
-    combinedList.sort((a,b) => new Date(b.date) - new Date(a.date));
-    
-    combinedList.forEach(tx => {
-        let row = document.createElement("tr");
-        if(Number(tx.credit) > 0) row.className = "credit-row";
-        else if(Number(tx.debit) > 0) row.className = "debit-row";
-        else row.className = "pending-row";
-        
-        row.innerHTML = `<td>${formatDate(tx.date)}</td>
-                         <td style="font-weight:bold; color:#1c1e21;">${tx.origin}</td>
-                         <td>${tx.desc || ""}</td>
-                         <td>${tx.credit || ""}</td>
-                         <td>${tx.debit || ""}</td>`;
-        tableBody.appendChild(row);
-    });
-}
-
-function closeAllTransactionsScreen() {
-    document.getElementById("allTransactionsScreen").classList.add("hidden");
-    document.getElementById("mainScreen").classList.remove("hidden");
-    runAdvancedSearchFilter();
-}
-
-function editTransaction(i) {
-    let tx = users[currentUser].transactions[i];
-    folderPlusMode = true; isEditingGeneral = false;
-    document.getElementById("generalFormMobileRow").style.display = "none";
-    document.getElementById("formHistoryTitle").style.display = "none";
-    document.getElementById("popupFormInlineTableBody").parentElement.parentElement.style.display = "none";
-    
-    document.getElementById("entryFormTitle").innerText = "Edit Entry";
-    document.getElementById("tDate").value = tx.date;
-    document.getElementById("tDesc").value = tx.desc || "";
-    document.getElementById("tCredit").value = tx.credit || "";
-    document.getElementById("tDebit").value = tx.debit || "";
-    editIndex = i;
-    closeActionPopup();
-    document.getElementById("entryPopup").style.display = "flex";
-}
-
-function editGeneralTransaction(i) {
-    let tx = generalEntries[i];
-    folderPlusMode = false; isEditingGeneral = true;
-    document.getElementById("generalFormMobileRow").style.display = "block";
-    document.getElementById("formHistoryTitle").style.display = "block";
-    document.getElementById("popupFormInlineTableBody").parentElement.parentElement.style.display = "block";
-    
-    document.getElementById("entryFormTitle").innerText = "Edit General Entry";
-    document.getElementById("tDate").value = tx.date;
-    document.getElementById("tMobileNumber").value = tx.mobile || "";
-    document.getElementById("tDesc").value = tx.desc || "";
-    document.getElementById("tCredit").value = tx.credit || "";
-    document.getElementById("tDebit").value = tx.debit || "";
-    editIndex = i;
-    closeActionPopup();
-    renderInlineFormHistoryTable();
-    document.getElementById("entryPopup").style.display = "flex";
-}
-
-function deleteTransaction(i){ 
-    closeActionPopup();
-    if(confirm("Delete this entry?")){ 
-        users[currentUser].transactions.splice(i,1); saveLocal(); renderTransactions(); 
-    } 
-}
-
-function deleteGeneralTransaction(i) {
-    closeActionPopup();
-    if(confirm("Delete this general entry?")){ 
-        generalEntries.splice(i,1); saveLocal(); runAdvancedSearchFilter(); 
-    } 
-}
-
-function addUser(){
-    let n=prompt("Name:"), m=prompt("Mobile:");
-    if(n){ users.push({name:n,mobile:m,transactions:[]}); saveLocal(); runAdvancedSearchFilter(); }
-}
-
-function openActionPopup(title, onEdit, onDelete, isUserMode, onDeleteUser) {
-    document.getElementById("popupTitle").innerText = title;
-    document.getElementById("actionPopup").style.display = "flex";
-    
-    if(isUserMode) {
-        document.getElementById("editBtn").style.display = "none";
-        document.getElementById("deleteBtn").style.display = "none";
-        document.getElementById("deleteUserBtn").style.display = "block";
-        document.getElementById("deleteUserBtn").onclick = onDeleteUser;
-    } else {
-        document.getElementById("editBtn").style.display = "block";
-        document.getElementById("deleteBtn").style.display = "block";
-        document.getElementById("deleteUserBtn").style.display = "none";
-        document.getElementById("editBtn").onclick = onEdit;
-        document.getElementById("deleteBtn").onclick = onDelete;
-    }
-}
-function closeActionPopup() { document.getElementById("actionPopup").style.display = "none"; }
-function openSharePopup() { document.getElementById("sharePopup").style.display = "flex"; }
-function closeSharePopup() { document.getElementById("sharePopup").style.display = "none"; }
-
-function sendWhatsAppMessage() {
-    let u = users[currentUser];
-    if(!u.mobile) return alert("மொபைல் எண் இல்லை!");
-    let text = `*STATEMENT OF ACCOUNT*%0A%0A👤 *Name:* ${u.name}%0A📊 *Total Balance:* ₹${getBalance(u).toLocaleString()}`;
-    window.open(`https://api.whatsapp.com/send?phone=${u.mobile}&text=${text}`, '_blank');
-    closeSharePopup();
-}
-
-function generatePdfStatement() {
-    let u = users[currentUser];
-    document.getElementById("pdfNameField").innerText = "Name: " + u.name;
-    document.getElementById("pdfMobileField").innerText = "Mobile: " + (u.mobile || "No Mobile");
-    document.getElementById("pdfBalanceField").innerText = "Final Balance: ₹" + getBalance(u).toLocaleString();
-    
-    const pdfBody = document.getElementById("pdfTableBody");
-    pdfBody.innerHTML = "";
-    let curBal = 0;
-    u.transactions.forEach((tx) => {
-        let isNote = (!tx.credit && !tx.debit);
-        if(!isNote) curBal += (Number(tx.credit||0) - Number(tx.debit||0));
-        let row = document.createElement("tr");
-        row.innerHTML = `<td>${formatDate(tx.date)}</td><td>${tx.desc || ''}</td><td>${tx.credit || ''}</td><td>${tx.debit || ''}</td><td><b>${isNote ? "" : "₹" + curBal.toLocaleString()}</b></td>`;
-        pdfBody.appendChild(row);
-    });
-
-    showLoading(true);
-    html2pdf().set({ margin: 10, filename: `${u.name}_Statement.pdf`, html2canvas: { scale: 2, backgroundColor: '#ffffff' }, jsPDF: { format: 'a4', orientation: 'portrait' } }).from(document.getElementById("pdfTemplate")).save().then(() => {
-        showLoading(false); closeSharePopup();
-    });
-}
-
-function exportData() {
-    let backupData = {
-        users: users,
-        generalEntries: generalEntries,
-        appTitle: localStorage.getItem("customAppTitleText") || "Finance Manager Pro",
-        language: localStorage.getItem("appLanguagePreference") || "ta"
-    };
-    
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
-    let downloadAnchor = document.createElement('a');
-    let dateStr = new Date().toISOString().split('T')[0];
-    
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `Finance_Backup_${dateStr}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function triggerImport() { document.getElementById("importFileInput").click(); }
-
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const importedData = JSON.parse(e.target.result);
-            if (importedData.users || importedData.generalEntries) {
-                if (confirm("புதிய டேட்டாவை இம்போர்ட் செய்யவா? இது தற்போது உள்ள டேட்டாவை மாற்றிவிடும்!")) {
-                    if (importedData.users) users = importedData.users;
-                    if (importedData.generalEntries) generalEntries = importedData.generalEntries;
-                    if (importedData.appTitle) localStorage.setItem("customAppTitleText", importedData.appTitle);
-                    if (importedData.language) localStorage.setItem("appLanguagePreference", importedData.language);
-                    
-                    saveLocal();
-                    initAppLayoutSettings();
-                    runAdvancedSearchFilter();
-                    alert("டேட்டா வெற்றிகரமாக இம்போர்ட் செய்யப்பட்டது!");
-                }
-            } else {
-                alert("தவறான கோப்பு வடிவம்!");
-            }
-        } catch (err) { alert("கோப்பை படிப்பதில் பிழை ஏற்பட்டது!"); }
-    };
-    reader.readAsText(file);
-}
-
-function autoBackupAndClearAll() {
-    if (confirm("🚨 எச்சரிக்கை! அனைத்து கணக்குகளையும் நீக்க விரும்புகிறீர்களா? (நீக்குவதற்கு முன் ஆட்டோமேட்டிக்காக பேக்கப் ஃபைல் டவுன்லோடு செய்யப்படும்)")) {
-        exportData();
-        setTimeout(() => {
-            users = []; generalEntries = [];
-            saveLocal(); runAdvancedSearchFilter();
-            alert("அனைத்து டேட்டாக்களும் பாதுகாப்பாக எக்ஸ்போர்ட் செய்யப்பட்டு, முழுமையாக நீக்கப்பட்டுவிட்டன!");
-        }, 1000);
-    }
-}
-
-function openSettings() {
-    document.getElementById("mainScreen").classList.add("hidden");
-    document.getElementById("settingsScreen").classList.remove("hidden");
-}
-
-function closeSettings() {
-    document.getElementById("settingsScreen").classList.add("hidden");
-    document.getElementById("mainScreen").classList.remove("hidden");
-    runAdvancedSearchFilter();
-}
-
-function toggleBoxVisibility() {
-    let config = {};
-    const keys = ['totalUsers', 'totalCredit', 'totalDebit', 'totalBalance', 'redUsersCount', 'redTotalCredit', 'redTotalDebit', 'redTotalBalance'];
-    keys.forEach(k => { config[k] = document.getElementById("switch_" + k).checked; });
-    localStorage.setItem("dashboardToggleConfig", JSON.stringify(config));
-    applySavedToggleSettings();
-}
-
-function applySavedToggleSettings() {
-    let config = JSON.parse(localStorage.getItem("dashboardToggleConfig")) || {};
-    const keys = ['totalUsers', 'totalCredit', 'totalDebit', 'totalBalance', 'redUsersCount', 'redTotalCredit', 'redTotalDebit', 'redTotalBalance'];
-    
-    let generalActiveCount = 0; let redActiveCount = 0;
-
-    keys.forEach(k => {
-        let isChecked = config[k] !== undefined ? config[k] : true; 
-        let boxElement = document.getElementById("box_" + k);
-        if(boxElement) {
-            if(isChecked) {
-                boxElement.style.display = "block";
-                if(['totalUsers', 'totalCredit', 'totalDebit', 'totalBalance'].includes(k)) generalActiveCount++;
-                if(['redUsersCount', 'redTotalCredit', 'redTotalDebit', 'redTotalBalance'].includes(k)) redActiveCount++;
-            } else { boxElement.style.display = "none"; }
-        }
-    });
-
-    document.getElementById("title_generalSec").style.display = (generalActiveCount === 0) ? "none" : "block";
-    document.getElementById("sec_generalDashboard").style.display = (generalActiveCount === 0) ? "none" : "grid";
-    document.getElementById("title_redSec").style.display = (redActiveCount === 0) ? "none" : "block";
-    document.getElementById("sec_redDashboard").style.display = (redActiveCount === 0) ? "none" : "grid";
-}
-
-function changeFontSize(size) {
-    document.documentElement.style.setProperty('--font-multiplier', size === 'large' ? '1.25' : '1.0');
-}
-
-window.onload = function() { initAppLayoutSettings(); runAdvancedSearchFilter(); };
-</script>
-</body>
-</html>
+function closeEntryForm(){ document.getElementById("entryPopup").style.display = "none"; editIndex = null; isEditingGeneral = false; folderPlusMo
