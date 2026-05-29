@@ -247,6 +247,7 @@ function openUser(i){
 
 function goBack(){
     document.getElementById("mainScreen").classList.remove("hidden");
+    document.getElementById("userScreen").classList.hidden = true; // மறைக்கப்படும்
     document.getElementById("userScreen").classList.add("hidden");
     renderUsers();
 }
@@ -273,6 +274,7 @@ function saveTransaction(){
     renderTransactions();
 }
 
+// மாற்றப்பட்ட பகுதி: கடைசி 11 எண்ட்ரிகள் மட்டும்
 function renderTransactions(){
     let u = users[currentUser];
     u.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -290,8 +292,7 @@ function renderTransactions(){
         display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
     });
 
-    // கடைசி 11 டிரான்ஸாக்ஷன்களை மட்டும் காட்டுதல்
-    display.reverse().slice(0, 11).forEach((tx) => {
+    display.reverse().slice(0, 11).reverse().forEach((tx) => {
         let row = document.createElement("tr");
         if(Number(tx.credit) > 0) row.className = "credit-row";
         else if(Number(tx.debit) > 0) row.className = "debit-row";
