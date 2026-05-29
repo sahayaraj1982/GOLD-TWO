@@ -2,87 +2,138 @@
 <html lang="ta">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finance Manager Pro V 2.3</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Finance Manager Pro</title>
 <style>
-/* --------------------------------------------------------- */
-/* CONFIG: நீங்கள் விரும்பினால் இந்த மதிப்புகளை மாற்றிக்கொள்ளலாம் */
-:root {
-    --font-size-main: 16px; /* இங்கு 16-ஐ மாற்றி எழுத்து அளவை மாற்றவும் */
-    --primary-color: #2c3e50;
-    --border-bottom-height: 8px; /* வால்யூம் கண்ட்ரோல் போன்ற தடிமன் */
-    --accent-color: #ffd700;
-}
-/* --------------------------------------------------------- */
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#111;color:white;}
+.wrapper{max-width:900px;margin:auto;padding-bottom: 50px;}
+header{background:linear-gradient(145deg,#ffd700,#b8860b);color:#111;text-align:center;padding:18px;font-size:24px;font-weight:bold;box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
 
-body { font-family: sans-serif; background: #f4f7f6; margin: 0; padding: 0; font-size: var(--font-size-main); }
-.app-container { max-width: 600px; margin: auto; background: white; min-height: 100vh; padding-bottom: 20px; }
+.dashboard{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;padding:10px;}
+.stat-box{background:#222;padding:20px 10px;border-radius:10px;text-align:center;border:1px solid #333;}
+.stat-box.red-border{border: 2px solid #e53935;}
+.stat-box small{color: #aaa; font-size: 14px; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;}
+.stat-box h2{margin:0; font-size: 24px; color: #ffd700; font-weight: 900;}
 
-/* வால்யூம் கண்ட்ரோல் பாட்டம் கலர் ஸ்டைல் */
-.btn-style {
-    border: none; border-bottom: var(--border-bottom-height) solid var(--accent-color);
-    background: #e0e0e0; padding: 15px; border-radius: 5px; cursor: pointer;
-    margin: 10px; width: calc(100% - 20px); font-weight: bold;
-}
+.search-container{padding:10px;}
+.search-input{width:100%; padding:15px; border-radius:10px; border:1px solid #ffd700; background:#222; color:white; box-sizing: border-box; font-size: 18px;}
 
-.header-banner { background: var(--primary-color); color: white; padding: 20px; text-align: center; }
-.g-indicator { color: #2ecc71; font-weight: bold; font-size: 20px; float: right; }
+.top-buttons{text-align:center;margin:10px;}
+button{padding:12px 18px;border:none;border-radius:8px;margin:4px;cursor:pointer;font-weight:bold; font-size: 15px; transition: 0.3s;}
+.gold{background:#ffd700;color:#111;}
 
-/* அனைத்து ஸ்கிரீன்ஸும் தனித்தனியாக */
-.screen { display: none; }
-.active-screen { display: block; }
+.user-card{width:calc(100% - 24px);margin:10px auto;padding:18px;border-radius:15px;background:#222;cursor:pointer;border: 1px solid #333;box-sizing: border-box; position: relative;}
+.user-card.redbg{background:linear-gradient(145deg, #8b0000, #5a0000); border-color: #ff4444;}
+.row{display:flex;justify-content:space-between; align-items:center; font-size: 18px; padding-right: 40px;}
 
-/* புதிய என்ட்ரி மற்றும் சர்ச் பாக்ஸ் ஸ்டைல் */
-.input-box { border: 2px solid #ccc; padding: 12px; margin: 10px; border-radius: 8px; width: 90%; }
+.menu-dot-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: transparent; color: gold; font-size: 24px; border: none; padding: 5px 10px; cursor: pointer; z-index: 10; }
+
+.profile-header{background:#222; padding:15px 20px; border-bottom: 2px solid gold; margin-bottom: 5px;}
+.profile-header h2{margin:0 0 15px 0; color: gold; text-align: center; font-size: 28px;}
+.prof-details-row{display: flex; justify-content: space-between; align-items: center; margin-top: 10px;}
+
+#profMobile { margin: 0; font-size: 22px; color: #ffd700; font-weight: bold; }
+#profBalance { margin: 0; font-size: 24px; color: #ffffff; font-weight: 900; }
+
+/* மொபைல் டிரான்ஸாக்ஷன் டேபிள் ஸ்டைல் */
+.table-container{overflow-x:auto; padding:10px; max-height: 60vh;}
+table{width:100%;border-collapse:collapse; background: #1a1a1a; border-radius: 10px;}
+th,td{padding:10px 4px;text-align:center; border-bottom: 1px solid #444; font-size: 13px;}
+th{background:#333; color: #ffd700;}
+
+.credit-row{background-color: #1f7a1f !important; color: white !important;}
+.debit-row{background-color: #b91c1c !important; color: white !important;}
+
+.action-icon { background: none; border: none; font-size: 14px; cursor: pointer; padding: 2px; }
+
+.popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;justify-content:center;align-items:center;}
+.popup-content{background:#222;padding:25px;border-radius:20px;text-align:center;border:2px solid #ffd700;width:90%; max-width: 400px;}
+
+input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:10px 0;padding:12px;border:none;border-radius:8px;background:#333;color:white; box-sizing: border-box; font-size: 16px;}
+.hidden{display:none;}
+.btn-entry{background:#ffd700; color:#111; padding:15px 30px; border-radius:50px; font-size:18px; position:fixed; bottom:20px; right:20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 99;}
 </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div id="loginScreen" class="screen active-screen">
-        <div class="header-banner"><h2>LOGIN</h2></div>
-        <input type="password" id="passInput" class="input-box" placeholder="Password">
-        <button class="btn-style" onclick="verifyLogin()">ENTER</button>
+<div class="wrapper">
+    <header>Finance Manager Pro</header>
+    <div id="mainScreen">
+        <div class="search-container"><input type="text" id="userSearch" class="search-input" placeholder="தேடவும்..." oninput="renderUsers()"></div>
+        <div class="dashboard">
+            <div class="stat-box"><small>Total</small><h2 id="totalUsers">0</h2></div>
+            <div class="stat-box"><small>Balance</small><h2 id="totalBalance">0</h2></div>
+        </div>
+        <div id="userList"></div>
     </div>
 
-    <div id="mainScreen" class="screen">
-        <div class="header-banner">
-            Finance Manager V 2.3 <span id="gIndicator" class="g-indicator">G</span>
+    <div id="userScreen" class="hidden">
+        <div class="profile-header">
+            <button class="gold" onclick="goBack()">←</button>
+            <h2 id="profName"></h2>
+            <div class="prof-details-row"><p id="profMobile"></p><h3 id="profBalance"></h3></div>
         </div>
-        <button class="btn-style" onclick="showScreen('userListScreen')">USER LIST</button>
-        <button class="btn-style" onclick="showScreen('settingsScreen')">SETTINGS</button>
-    </div>
-
-    <div id="userListScreen" class="screen">
-        <div class="header-banner"><h2>USERS</h2></div>
-        <div id="userListContent"></div>
-    </div>
-    
-    <div id="settingsScreen" class="screen">
-        <div class="header-banner"><h2>SETTINGS</h2></div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Date</th><th>Desc</th><th>Cr</th><th>Db</th><th>Bal</th></tr></thead>
+                <tbody id="transactionTable"></tbody>
+            </table>
         </div>
+        <button class="btn-entry" onclick="openEntryForm()">+ Entry</button>
+    </div>
 </div>
 
 <script>
-    // உங்கள் ஸ்கிரிப்ட் லாஜிக் மற்றும் ஆல் டெலிட் எக்ஸ்போர்ட் வசதி இங்கே வரும்
-    function autoDeleteWithExport() {
-        let fileName = "Finance_Backup_" + new Date().toISOString().slice(0,10) + ".json";
-        alert("கோப்பு டவுன்லோடு செய்யப்படுகிறது: " + fileName);
-        // எக்ஸ்போர்ட் லாஜிக்...
-        // பிறகு டெலிட் லாஜிக்...
-    }
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbwphdRyzueYMNuhEaBGXl_ELo-xMP8-TC4YvnfPB3--ji0nR8CIRF37DhWFrx5KfXVi2w/exec";
+let users = JSON.parse(localStorage.getItem("financeUsers")) || [];
+let currentUser = null;
 
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-        document.getElementById(screenId).classList.add('active-screen');
-    }
+function renderUsers(){
+    const listDiv = document.getElementById("userList");
+    listDiv.innerHTML = "";
+    users.forEach((u, i) => {
+        let card = document.createElement("div");
+        card.className = "user-card";
+        card.onclick = () => openUser(i);
+        card.innerHTML = `<div class="row"><b>${u.name}</b><span>₹ ${getBalance(u)}</span></div>`;
+        listDiv.appendChild(card);
+    });
+}
 
-    function verifyLogin() {
-        // லாகின் லாஜிக்
-        showScreen('mainScreen');
-    }
+function openUser(i){
+    currentUser = i;
+    document.getElementById("mainScreen").classList.add("hidden");
+    document.getElementById("userScreen").classList.remove("hidden");
+    renderTransactions();
+}
+
+function getBalance(u){
+    return u.transactions ? u.transactions.reduce((a,t)=>a+(Number(t.credit||0)-Number(t.debit||0)), 0) : 0;
+}
+
+function renderTransactions(){
+    let u = users[currentUser];
+    document.getElementById("profName").innerText = u.name;
+    document.getElementById("profBalance").innerText = "₹" + getBalance(u);
+    const tableBody = document.getElementById("transactionTable");
+    tableBody.innerHTML = "";
+    
+    // கடைசி 11 டிரான்ஸாக்ஷன்களை மட்டும் காட்டுதல்
+    let txs = [...u.transactions].slice(-11).reverse(); 
+    
+    txs.forEach((tx) => {
+        let row = document.createElement("tr");
+        row.innerHTML = `<td>${tx.date.slice(5)}</td><td>${tx.desc}</td><td>${tx.credit||''}</td><td>${tx.debit||''}</td><td>${getBalance(u)}</td>`;
+        tableBody.appendChild(row);
+    });
+}
+
+function goBack(){
+    document.getElementById("mainScreen").classList.remove("hidden");
+    document.getElementById("userScreen").classList.add("hidden");
+}
+
+window.onload = renderUsers;
 </script>
-
 </body>
 </html>
