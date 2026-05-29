@@ -9,6 +9,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#111;color:whit
 .wrapper{max-width:900px;margin:auto;padding-bottom: 50px;}
 header{background:linear-gradient(145deg,#ffd700,#b8860b);color:#111;text-align:center;padding:18px;font-size:24px;font-weight:bold;box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
 
+/* Dashboard */
 .dashboard{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;padding:10px;}
 .stat-box{background:#222;padding:20px 10px;border-radius:10px;text-align:center;border:1px solid #333;}
 .stat-box.red-border{border: 2px solid #e53935;}
@@ -22,12 +23,14 @@ header{background:linear-gradient(145deg,#ffd700,#b8860b);color:#111;text-align:
 button{padding:12px 18px;border:none;border-radius:8px;margin:4px;cursor:pointer;font-weight:bold; font-size: 15px; transition: 0.3s;}
 .gold{background:#ffd700;color:#111;}
 
+/* User Cards */
 .user-card{width:calc(100% - 24px);margin:10px auto;padding:18px;border-radius:15px;background:#222;cursor:pointer;border: 1px solid #333;box-sizing: border-box; position: relative;}
 .user-card.redbg{background:linear-gradient(145deg, #8b0000, #5a0000); border-color: #ff4444;}
 .row{display:flex;justify-content:space-between; align-items:center; font-size: 18px; padding-right: 40px;}
 
 .menu-dot-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: transparent; color: gold; font-size: 24px; border: none; padding: 5px 10px; cursor: pointer; z-index: 10; }
 
+/* User Profile Section */
 .profile-header{background:#222; padding:15px 20px; border-bottom: 2px solid gold; margin-bottom: 5px;}
 .profile-header h2{margin:0 0 15px 0; color: gold; text-align: center; font-size: 28px;}
 .prof-details-row{display: flex; justify-content: space-between; align-items: center; margin-top: 10px;}
@@ -35,51 +38,101 @@ button{padding:12px 18px;border:none;border-radius:8px;margin:4px;cursor:pointer
 #profMobile { margin: 0; font-size: 22px; color: #ffd700; font-weight: bold; }
 #profBalance { margin: 0; font-size: 24px; color: #ffffff; font-weight: 900; }
 
-/* மொபைல் டிரான்ஸாக்ஷன் டேபிள் ஸ்டைல் */
-.table-container{overflow-x:auto; padding:10px; max-height: 60vh;}
+/* Transaction Table */
+.table-container{overflow-x:auto; padding:10px;}
 table{width:100%;border-collapse:collapse; background: #1a1a1a; border-radius: 10px;}
-th,td{padding:10px 4px;text-align:center; border-bottom: 1px solid #444; font-size: 13px;}
+th,td{padding:12px 6px;text-align:center; border-bottom: 1px solid #444; font-size: 14px;}
 th{background:#333; color: #ffd700;}
 
 .credit-row{background-color: #1f7a1f !important; color: white !important;}
 .debit-row{background-color: #b91c1c !important; color: white !important;}
+.pending-row{background-color: #2c2c2c; color: #ffd700;}
 
-.action-icon { background: none; border: none; font-size: 14px; cursor: pointer; padding: 2px; }
+.action-icon { background: none; border: none; font-size: 16px; cursor: pointer; padding: 2px 5px; margin: 0 2px; display: inline-block; }
 
+/* Popup / Entry Form */
 .popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;justify-content:center;align-items:center;}
 .popup-content{background:#222;padding:25px;border-radius:20px;text-align:center;border:2px solid #ffd700;width:90%; max-width: 400px;}
 
 input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:10px 0;padding:12px;border:none;border-radius:8px;background:#333;color:white; box-sizing: border-box; font-size: 16px;}
 .hidden{display:none;}
+
 .btn-entry{background:#ffd700; color:#111; padding:15px 30px; border-radius:50px; font-size:18px; position:fixed; bottom:20px; right:20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 99;}
+
+/* Loading Indicator */
+#loading { display:none; position: fixed; top: 10px; right: 10px; background: #ffd700; color: #111; padding: 8px 15px; border-radius: 20px; font-weight: bold; z-index: 10000; font-size: 14px;}
 </style>
 </head>
 <body>
 
+<div id="loading">டேட்டா SAVE...</div>
+
 <div class="wrapper">
     <header>Finance Manager Pro</header>
+
     <div id="mainScreen">
-        <div class="search-container"><input type="text" id="userSearch" class="search-input" placeholder="தேடவும்..." oninput="renderUsers()"></div>
+        <div class="search-container">
+            <input type="text" id="userSearch" class="search-input" placeholder="தேடவும்..." oninput="renderUsers()">
+        </div>
+
         <div class="dashboard">
-            <div class="stat-box"><small>Total</small><h2 id="totalUsers">0</h2></div>
-            <div class="stat-box"><small>Balance</small><h2 id="totalBalance">0</h2></div>
+            <div class="stat-box"><small>Total Users</small><h2 id="totalUsers">0</h2></div>
+            <div class="stat-box"><small>Total Balance</small><h2 id="totalBalance">0</h2></div>
+            <div class="stat-box red-border"><small style="color:#ff5252;">Red Users</small><h2 id="redUsersCount">0</h2></div>
+            <div class="stat-box red-border"><small style="color:#ff5252;">10% Collection</small><h2 id="tenPercentTotal">0</h2></div>
+        </div>
+
+        <div class="top-buttons">
+            <button class="gold" onclick="addUser()">+ New User</button>
+            <button class="gold" onclick="fetchFromCloud()">🔄 Refresh</button>
+            <button class="gold" onclick="exportData()">Export</button>
+            <button class="gold" onclick="document.getElementById('importFile').click()">Import</button>
+            <input type="file" id="importFile" hidden onchange="importData(event)">
         </div>
         <div id="userList"></div>
     </div>
 
     <div id="userScreen" class="hidden">
         <div class="profile-header">
-            <button class="gold" onclick="goBack()">←</button>
+            <button class="gold" onclick="goBack()" style="float:left; padding: 5px 12px; margin-top: -5px;">← Back</button>
             <h2 id="profName"></h2>
-            <div class="prof-details-row"><p id="profMobile"></p><h3 id="profBalance"></h3></div>
+            <div class="prof-details-row">
+                <p id="profMobile"></p>
+                <h3 id="profBalance"></h3>
+            </div>
         </div>
+
         <div class="table-container">
             <table>
-                <thead><tr><th>Date</th><th>Desc</th><th>Cr</th><th>Db</th><th>Bal</th></tr></thead>
+                <thead><tr><th>Date</th><th>Desc</th><th>Cr</th><th>Db</th><th>Bal</th><th>Action</th></tr></thead>
                 <tbody id="transactionTable"></tbody>
             </table>
         </div>
+
         <button class="btn-entry" onclick="openEntryForm()">+ Entry</button>
+    </div>
+</div>
+
+<div id="entryPopup" class="popup-overlay">
+    <div class="popup-content">
+        <h3 style="color:gold; margin-top:0;">New Entry</h3>
+        <input type="date" id="tDate">
+        <input type="text" id="tDesc" placeholder="Description">
+        <input type="number" id="tCredit" placeholder="Credit">
+        <input type="number" id="tDebit" placeholder="Debit">
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="gold" onclick="saveTransaction()" style="flex:1;">Save</button>
+            <button style="background:#555; color:white; flex:1;" onclick="closeEntryForm()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="actionPopup" class="popup-overlay" onclick="closeActionPopup()">
+    <div class="popup-content" onclick="event.stopPropagation()">
+        <h3 id="popupTitle" style="color:gold;">Manage</h3>
+        <button class="gold" id="editBtn" style="width:100%;">Edit</button><br>
+        <button style="background:#e53935; color:white; width:100%; margin-top:10px;" id="deleteBtn">Delete</button><br>
+        <button style="background:#555; color:white; width:100%; margin-top:10px;" onclick="closeActionPopup()">Cancel</button>
     </div>
 </div>
 
@@ -87,17 +140,102 @@ input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:1
 const CLOUD_URL = "https://script.google.com/macros/s/AKfycbwphdRyzueYMNuhEaBGXl_ELo-xMP8-TC4YvnfPB3--ji0nR8CIRF37DhWFrx5KfXVi2w/exec";
 let users = JSON.parse(localStorage.getItem("financeUsers")) || [];
 let currentUser = null;
+let editIndex = null;
+
+function showLoading(show) { document.getElementById("loading").style.display = show ? "block" : "none"; }
+
+async function saveLocal(){ 
+    localStorage.setItem("financeUsers", JSON.stringify(users)); 
+    if(CLOUD_URL) {
+        showLoading(true);
+        try {
+            await fetch(CLOUD_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "data=" + encodeURIComponent(JSON.stringify(users))
+            });
+        } catch(e) { console.error("Cloud save failed", e); }
+        showLoading(false);
+    }
+}
+
+async function fetchFromCloud() {
+    if(!CLOUD_URL) return;
+    showLoading(true);
+    try {
+        let res = await fetch(CLOUD_URL);
+        let cloudData = await res.json();
+        if(cloudData && cloudData.length > 0) {
+            users = cloudData;
+            localStorage.setItem("financeUsers", JSON.stringify(users));
+            renderUsers();
+        }
+    } catch(e) { console.error("Cloud fetch failed", e); }
+    showLoading(false);
+}
+
+function formatDate(d){ 
+    if(!d) return ""; 
+    let p = d.split("-"); 
+    return `${p[2]}-${p[1]}-${p[0]}`; 
+}
+
+function getBalance(u){
+    if(!u.transactions) return 0;
+    return u.transactions.reduce((a,t)=>a+(Number(t.credit||0)-Number(t.debit||0)), 0);
+}
+
+function isRed(u) {
+    if (!u.transactions || u.transactions.length === 0) return false;
+    let today = new Date().toISOString().split("T")[0];
+    return u.transactions.some(t => t.date <= today && !Number(t.credit) && !Number(t.debit));
+}
+
+function getTenPercent(u) {
+    if(!isRed(u)) return 0;
+    let loan = u.transactions.find(t => Number(t.debit) > 0);
+    return loan ? (Number(loan.debit) * 0.10) : 0;
+}
 
 function renderUsers(){
+    const search = document.getElementById("userSearch").value.toLowerCase();
     const listDiv = document.getElementById("userList");
     listDiv.innerHTML = "";
-    users.forEach((u, i) => {
+
+    let totalBal = 0, redCount = 0, tenTotal = 0;
+    users.forEach(u => {
+        totalBal += getBalance(u);
+        if(isRed(u)) { redCount++; tenTotal += getTenPercent(u); }
+    });
+
+    document.getElementById("totalUsers").innerText = users.length;
+    document.getElementById("totalBalance").innerText = "₹ " + totalBal.toLocaleString();
+    document.getElementById("redUsersCount").innerText = redCount;
+    document.getElementById("tenPercentTotal").innerText = "₹ " + tenTotal.toLocaleString();
+
+    let filtered = users.filter(u => u.name.toLowerCase().includes(search) || (u.mobile && u.mobile.includes(search)));
+    filtered.sort((a,b)=> isRed(b) - isRed(a));
+
+    filtered.forEach((u)=>{
+        let realIdx = users.indexOf(u);
         let card = document.createElement("div");
-        card.className = "user-card";
-        card.onclick = () => openUser(i);
-        card.innerHTML = `<div class="row"><b>${u.name}</b><span>₹ ${getBalance(u)}</span></div>`;
+        card.className = "user-card" + (isRed(u) ? " redbg" : "");
+        card.onclick = () => openUser(realIdx);
+        card.innerHTML = `
+            <div class="row">
+                <div><b>${u.name}</b><br><small style="font-size:14px;">${u.mobile || ''}</small></div>
+                <div style="font-weight:bold;">₹ ${getBalance(u).toLocaleString()}</div>
+            </div>
+            <button class="menu-dot-btn" onclick="triggerActionMenu(event, ${realIdx}, '${u.name}')">&#8942;</button>
+        `;
         listDiv.appendChild(card);
     });
+}
+
+function triggerActionMenu(event, realIdx, name) {
+    event.stopPropagation();
+    openActionPopup(name, () => editUser(realIdx), () => deleteUser(realIdx));
 }
 
 function openUser(i){
@@ -107,33 +245,120 @@ function openUser(i){
     renderTransactions();
 }
 
-function getBalance(u){
-    return u.transactions ? u.transactions.reduce((a,t)=>a+(Number(t.credit||0)-Number(t.debit||0)), 0) : 0;
+function goBack(){
+    document.getElementById("mainScreen").classList.remove("hidden");
+    document.getElementById("userScreen").classList.add("hidden");
+    renderUsers();
+}
+
+function openEntryForm(){ 
+    document.getElementById("tDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("tDesc").value = "";
+    document.getElementById("tCredit").value = "";
+    document.getElementById("tDebit").value = "";
+    editIndex = null;
+    document.getElementById("entryPopup").style.display = "flex"; 
+}
+function closeEntryForm(){ document.getElementById("entryPopup").style.display = "none"; editIndex = null; }
+
+function saveTransaction(){
+    let d = document.getElementById("tDate").value, desc = document.getElementById("tDesc").value;
+    let c = document.getElementById("tCredit").value, deb = document.getElementById("tDebit").value;
+    if(!d) return alert("Date is required!");
+    let tx = { date: d, desc: desc, credit: c, debit: deb };
+    if(editIndex === null) { users[currentUser].transactions.push(tx); }
+    else { users[currentUser].transactions[editIndex] = tx; editIndex = null; }
+    saveLocal();
+    closeEntryForm();
+    renderTransactions();
 }
 
 function renderTransactions(){
     let u = users[currentUser];
+    u.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
     document.getElementById("profName").innerText = u.name;
-    document.getElementById("profBalance").innerText = "₹" + getBalance(u);
+    document.getElementById("profMobile").innerText = u.mobile || "No Mobile";
+    document.getElementById("profBalance").innerText = "Bal: ₹" + getBalance(u).toLocaleString();
+    
     const tableBody = document.getElementById("transactionTable");
     tableBody.innerHTML = "";
     
+    let curBal = 0, display = [];
+    u.transactions.forEach((tx, originalIndex) => {
+        let isNote = (!Number(tx.credit) && !Number(tx.debit));
+        if(!isNote) curBal += (Number(tx.credit||0) - Number(tx.debit||0));
+        display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
+    });
+
     // கடைசி 11 டிரான்ஸாக்ஷன்களை மட்டும் காட்டுதல்
-    let txs = [...u.transactions].slice(-11).reverse(); 
-    
-    txs.forEach((tx) => {
+    display.reverse().slice(0, 11).forEach((tx) => {
         let row = document.createElement("tr");
-        row.innerHTML = `<td>${tx.date.slice(5)}</td><td>${tx.desc}</td><td>${tx.credit||''}</td><td>${tx.debit||''}</td><td>${getBalance(u)}</td>`;
+        if(Number(tx.credit) > 0) row.className = "credit-row";
+        else if(Number(tx.debit) > 0) row.className = "debit-row";
+        else row.className = "pending-row";
+
+        row.innerHTML = `<td>${formatDate(tx.date)}</td>
+                         <td>${tx.desc||""}</td>
+                         <td>${tx.credit||""}</td>
+                         <td>${tx.debit||""}</td>
+                         <td><b>${tx.cumulative}</b></td>
+                         <td>
+                            <button class="action-icon" onclick="editTransaction(${tx.actualIdx})">✏️</button>
+                            <button class="action-icon" onclick="deleteTransaction(${tx.actualIdx})">🗑️</button>
+                         </td>`;
         tableBody.appendChild(row);
     });
 }
 
-function goBack(){
-    document.getElementById("mainScreen").classList.remove("hidden");
-    document.getElementById("userScreen").classList.add("hidden");
+function editTransaction(i){
+    let tx = users[currentUser].transactions[i];
+    document.getElementById("tDate").value = tx.date;
+    document.getElementById("tDesc").value = tx.desc || "";
+    document.getElementById("tCredit").value = tx.credit || "";
+    document.getElementById("tDebit").value = tx.debit || "";
+    editIndex = i;
+    document.getElementById("entryPopup").style.display = "flex";
 }
 
-window.onload = renderUsers;
+function deleteTransaction(i){ 
+    if(confirm("இந்த எண்ட்ரியை நீக்கவா?")){ users[currentUser].transactions.splice(i,1); saveLocal(); renderTransactions(); } 
+}
+
+function addUser(){
+    let n=prompt("Name:"), m=prompt("Mobile:");
+    if(n){ users.push({name:n,mobile:m,transactions:[]}); saveLocal(); renderUsers(); }
+}
+function editUser(i){
+    let newName = prompt("Name:", users[i].name);
+    let newMobile = prompt("Mobile:", users[i].mobile);
+    if(newName !== null) users[i].name = newName;
+    if(newMobile !== null) users[i].mobile = newMobile;
+    saveLocal(); closeActionPopup(); renderUsers();
+}
+function deleteUser(i){ if(confirm("Delete User?")){ users.splice(i,1); saveLocal(); renderUsers(); closeActionPopup(); } }
+
+function openActionPopup(title, onEdit, onDelete) {
+    document.getElementById("popupTitle").innerText = title;
+    document.getElementById("actionPopup").style.display = "flex";
+    document.getElementById("editBtn").onclick = onEdit;
+    document.getElementById("deleteBtn").onclick = onDelete;
+}
+function closeActionPopup() { document.getElementById("actionPopup").style.display = "none"; }
+
+function exportData(){
+    let a=document.createElement("a");
+    a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(users));
+    a.download="Finance_Backup_2026.json"; a.click();
+}
+
+function importData(event){
+    let f=event.target.files[0]; if(!f) return;
+    let r=new FileReader();
+    r.onload=function(e){ users=JSON.parse(e.target.result); saveLocal(); renderUsers(); };
+    r.readAsText(f);
+}
+
+window.onload = function() { renderUsers(); fetchFromCloud(); };
 </script>
 </body>
 </html>
