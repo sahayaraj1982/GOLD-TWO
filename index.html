@@ -5,88 +5,156 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Finance Manager Pro</title>
 <style>
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#111;color:white;}
-.wrapper{max-width:900px;margin:auto;padding-bottom: 50px;}
-header{background:linear-gradient(145deg,#ffd700,#b8860b);color:#111;text-align:center;padding:18px;font-size:24px;font-weight:bold;box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+:root {
+    --theme-color: #ffd700;
+    --theme-gradient: linear-gradient(145deg, #ffd700, #b8860b);
+    --app-width: 500px;
+}
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#111;color:white;user-select:none;-webkit-user-select:none;}
+
+/* டைனமிக் அகலம் மாறும் வசதி */
+.wrapper{max-width: var(--app-width); margin:auto; padding-bottom: 50px; background:#111; min-height:100vh; transition: max-width 0.3s;}
+
+/* Header & G Neon Glow Style */
+header{background: var(--theme-gradient); color:#111; text-align:center; padding:18px; font-size:22px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;}
+
+.indicator-container {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+/* 'G' வடிவ ஒளிரும் நியான் விளக்கு */
+.g-led {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #222;
+    color: #ff4444;
+    border: 2px solid #ff4444;
+    box-shadow: 0 0 10px #ff4444, inset 0 0 5px #ff4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    transition: 0.3s;
+}
+.g-led.connected {
+    color: #00ff00;
+    border-color: #00ff00;
+    box-shadow: 0 0 15px #00ff00, inset 0 0 5px #00ff00, 0 0 5px #fff;
+}
 
 /* Dashboard */
 .dashboard{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;padding:10px;}
-.stat-box{background:#222;padding:20px 10px;border-radius:10px;text-align:center;border:1px solid #333;}
+.stat-box{background:#222;padding:15px 10px;border-radius:10px;text-align:center;border:1px solid #333;}
 .stat-box.red-border{border: 2px solid #e53935;}
-.stat-box small{color: #aaa; font-size: 14px; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;}
-.stat-box h2{margin:0; font-size: 24px; color: #ffd700; font-weight: 900;}
+.stat-box small{color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px;}
+.stat-box h2{margin:0; font-size: 20px; color: var(--theme-color); font-weight: 900;}
 
 .search-container{padding:10px;}
-.search-input{width:100%; padding:15px; border-radius:10px; border:1px solid #ffd700; background:#222; color:white; box-sizing: border-box; font-size: 18px;}
+.search-input{width:100%; padding:12px; border-radius:10px; border:1px solid var(--theme-color); background:#222; color:white; box-sizing: border-box; font-size: 16px;}
 
-.top-buttons{text-align:center;margin:10px;}
-button{padding:12px 18px;border:none;border-radius:8px;margin:4px;cursor:pointer;font-weight:bold; font-size: 15px; transition: 0.3s;}
-.gold{background:#ffd700;color:#111;}
+/* 5 சமமான வட்டார வடிவ பெரிய பட்டன்கள் */
+.top-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    padding: 0 10px;
+    margin: 10px 0;
+}
+.top-buttons button {
+    padding: 12px 2px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: 0.3s;
+    text-align: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+.gold{background: var(--theme-color); color:#111;}
 
 /* User Cards */
-.user-card{width:calc(100% - 24px);margin:10px auto;padding:18px;border-radius:15px;background:#222;cursor:pointer;border: 1px solid #333;box-sizing: border-box; position: relative;}
+.user-card{width:calc(100% - 20px);margin:10px auto;padding:15px;border-radius:15px;background:#222;cursor:pointer;border: 1px solid #333;box-sizing: border-box; position: relative;}
 .user-card.redbg{background:linear-gradient(145deg, #8b0000, #5a0000); border-color: #ff4444;}
-.row{display:flex;justify-content:space-between; align-items:center; font-size: 18px; padding-right: 40px;}
+.row{display:flex;justify-content:space-between; align-items:center; font-size: 16px; padding-right: 35px;}
 
-.menu-dot-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: transparent; color: gold; font-size: 24px; border: none; padding: 5px 10px; cursor: pointer; z-index: 10; }
+.menu-dot-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; color: var(--theme-color); font-size: 22px; border: none; padding: 5px; cursor: pointer; z-index: 10;}
 
-/* User Profile Section */
-.profile-header{background:#222; padding:15px 20px; border-bottom: 2px solid gold; margin-bottom: 5px;}
-.profile-header h2{margin:0 0 15px 0; color: gold; text-align: center; font-size: 28px;}
+/* Profile Header */
+.profile-header{background:#222; padding:15px 20px; border-bottom: 2px solid var(--theme-color); margin-bottom: 5px; position: relative;}
+.profile-header h2{margin:0 0 15px 0; color: var(--theme-color); text-align: center; font-size: 24px; padding-top: 5px;}
+.prof-header-buttons{display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;}
 .prof-details-row{display: flex; justify-content: space-between; align-items: center; margin-top: 10px;}
 
-#profMobile { margin: 0; font-size: 22px; color: #ffd700; font-weight: bold; }
-#profBalance { margin: 0; font-size: 24px; color: #ffffff; font-weight: 900; }
+#profMobile { margin: 0; font-size: 18px; color: var(--theme-color); font-weight: bold; }
+#profBalance { margin: 0; font-size: 20px; color: #ffffff; font-weight: 900; }
 
-/* Transaction Table */
+/* Table */
 .table-container{overflow-x:auto; padding:10px;}
 table{width:100%;border-collapse:collapse; background: #1a1a1a; border-radius: 10px;}
-th,td{padding:12px 6px;text-align:center; border-bottom: 1px solid #444; font-size: 14px;}
-th{background:#333; color: #ffd700;}
+th,td{padding:10px 4px;text-align:center; border-bottom: 1px solid #444; font-size: 13px;}
+th{background:#333; color: var(--theme-color);}
 
 .credit-row{background-color: #1f7a1f !important; color: white !important;}
 .debit-row{background-color: #b91c1c !important; color: white !important;}
-.pending-row{background-color: #2c2c2c; color: #ffd700;}
+.pending-row{background-color: #2c2c2c; color: var(--theme-color);}
 
-.action-icon { background: none; border: none; font-size: 16px; cursor: pointer; padding: 2px 5px; margin: 0 2px; display: inline-block; }
-
-/* Popup / Entry Form */
+/* Popups / Settings Switch Styles */
 .popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;justify-content:center;align-items:center;}
-.popup-content{background:#222;padding:25px;border-radius:20px;text-align:center;border:2px solid #ffd700;width:90%; max-width: 400px;}
+.popup-content{background:#222;padding:22px;border-radius:20px;text-align:center;border:2px solid var(--theme-color);width:90%; max-width: 360px; max-height: 85vh; overflow-y: auto;}
 
-input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:10px 0;padding:12px;border:none;border-radius:8px;background:#333;color:white; box-sizing: border-box; font-size: 16px;}
+input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:8px 0;padding:12px;border:none;border-radius:8px;background:#333;color:white; box-sizing: border-box; font-size: 16px;}
 .hidden{display:none;}
 
-.btn-entry{background:#ffd700; color:#111; padding:15px 30px; border-radius:50px; font-size:18px; position:fixed; bottom:20px; right:20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 99;}
+/* Switch Toggle Style */
+.setting-row { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; text-align: left; }
+.switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .3s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .slider { background-color: #1f7a1f; }
+input:checked + .slider:before { transform: translateX(22px); }
 
-/* Loading Indicator */
-#loading { display:none; position: fixed; top: 10px; right: 10px; background: #ffd700; color: #111; padding: 8px 15px; border-radius: 20px; font-weight: bold; z-index: 10000; font-size: 14px;}
+#loading { display:none; position: fixed; top: 10px; right: 10px; background: var(--theme-color); color: #111; padding: 8px 15px; border-radius: 20px; font-weight: bold; z-index: 10000; font-size: 13px;}
 </style>
 </head>
 <body>
 
-<div id="loading">டேட்டா SAVE...</div>
+<div id="loading">SAVE...</div>
 
 <div class="wrapper">
-    <header>Finance Manager Pro</header>
+    <header>
+        <span id="headerTitleText">Finance Manager Pro</span>
+        <!-- G நியான் ஒளிரும் விளக்கு -->
+        <div class="indicator-container">
+            <div id="ledLight" class="g-led">G</div>
+        </div>
+    </header>
 
     <div id="mainScreen">
-        <div class="search-container">
+        <div class="search-container" id="searchBoxWrapper">
             <input type="text" id="userSearch" class="search-input" placeholder="தேடவும்..." oninput="renderUsers()">
         </div>
 
-        <div class="dashboard">
+        <div class="dashboard" id="dashboardWrapper">
             <div class="stat-box"><small>Total Users</small><h2 id="totalUsers">0</h2></div>
             <div class="stat-box"><small>Total Balance</small><h2 id="totalBalance">0</h2></div>
             <div class="stat-box red-border"><small style="color:#ff5252;">Red Users</small><h2 id="redUsersCount">0</h2></div>
             <div class="stat-box red-border"><small style="color:#ff5252;">10% Collection</small><h2 id="tenPercentTotal">0</h2></div>
         </div>
 
+        <!-- 5 சீரான பெரிய பட்டன்கள் -->
         <div class="top-buttons">
-            <button class="gold" onclick="addUser()">+ New User</button>
-            <button class="gold" onclick="fetchFromCloud()">🔄 Refresh</button>
+            <button class="gold" onclick="addUser()">+ User</button>
+            <button class="gold" onclick="fetchFromCloud()">🔄 Reset</button>
             <button class="gold" onclick="exportData()">Export</button>
             <button class="gold" onclick="document.getElementById('importFile').click()">Import</button>
+            <button style="background:#444; color:white;" onclick="openSettingsPopup()">⚙️ Set</button>
             <input type="file" id="importFile" hidden onchange="importData(event)">
         </div>
         <div id="userList"></div>
@@ -94,7 +162,10 @@ input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:1
 
     <div id="userScreen" class="hidden">
         <div class="profile-header">
-            <button class="gold" onclick="goBack()" style="float:left; padding: 5px 12px; margin-top: -5px;">← Back</button>
+            <div class="prof-header-buttons">
+                <button class="gold" onclick="goBack()" style="padding: 6px 12px;">← Back</button>
+                <button class="gold" onclick="openEntryForm()" style="padding: 6px 12px;">+ Entry</button>
+            </div>
             <h2 id="profName"></h2>
             <div class="prof-details-row">
                 <p id="profMobile"></p>
@@ -103,19 +174,54 @@ input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:1
         </div>
 
         <div class="table-container">
+            <small style="color:#aaa; display:block; text-align:center; margin-bottom:5px;">💡 லாங் பிரஸ் (Long Press) செய்து எடிட்/டெலிட் செய்யவும்</small>
             <table>
-                <thead><tr><th>Date</th><th>Desc</th><th>Cr</th><th>Db</th><th>Bal</th><th>Action</th></tr></thead>
+                <thead><tr><th>Date</th><th>Desc</th><th>Cr</th><th>Db</th><th>Bal</th></tr></thead>
                 <tbody id="transactionTable"></tbody>
             </table>
         </div>
+    </div>
+</div>
 
-        <button class="btn-entry" onclick="openEntryForm()">+ Entry</button>
+<!-- செட்டிங்ஸ் கண்ட்ரோல் பாப்-அப் பேனல் -->
+<div id="settingsPopup" class="popup-overlay" onclick="closeSettingsPopup()">
+    <div class="popup-content" onclick="event.stopPropagation()">
+        <h3 style="color:var(--theme-color); margin-top:0;">⚙️ App Settings</h3>
+        
+        <div style="text-align:left; margin-bottom:12px;">
+            <label style="font-size:14px; color:#aaa;">பேனர் பெயர்:</label>
+            <input type="text" id="setAppTitle" oninput="applySettings()">
+        </div>
+
+        <div style="text-align:left; margin-bottom:12px;">
+            <label style="font-size:14px; color:#aaa;">ஆப் அகலம் (Width): <span id="widthVal">500</span>px</label>
+            <input type="range" id="setAppWidth" min="360" max="800" step="10" style="width:100%; margin-top:5px;" oninput="applySettings()">
+        </div>
+
+        <div style="text-align:left; margin-bottom:15px;">
+            <label style="font-size:14px; color:#aaa;">தீம் கலர் மாற்றம்:</label>
+            <input type="color" id="setThemeColor" style="width:100%; height:35px; border:none; margin-top:5px; background:transparent;" oninput="applySettings()">
+        </div>
+
+        <hr style="border-color:#333;">
+
+        <div class="setting-row">
+            <span>Dashboard பாக்ஸ் காட்டு</span>
+            <label class="switch"><input type="checkbox" id="switchDash" checked onchange="applySettings()"><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+            <span>Search பார் காட்டு</span>
+            <label class="switch"><input type="checkbox" id="switchSearch" checked onchange="applySettings()"><span class="slider"></span></label>
+        </div>
+
+        <button class="gold" style="width:100%; margin-top:10px; padding:12px;" onclick="closeSettingsPopup()">Done</button>
     </div>
 </div>
 
 <div id="entryPopup" class="popup-overlay">
     <div class="popup-content">
-        <h3 style="color:gold; margin-top:0;">New Entry</h3>
+        <h3 style="color:var(--theme-color); margin-top:0;">New Entry</h3>
         <input type="date" id="tDate">
         <input type="text" id="tDesc" placeholder="Description">
         <input type="number" id="tCredit" placeholder="Credit">
@@ -129,20 +235,88 @@ input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:1
 
 <div id="actionPopup" class="popup-overlay" onclick="closeActionPopup()">
     <div class="popup-content" onclick="event.stopPropagation()">
-        <h3 id="popupTitle" style="color:gold;">Manage</h3>
+        <h3 id="popupTitle" style="color:var(--theme-color);">Manage</h3>
         <button class="gold" id="editBtn" style="width:100%;">Edit</button><br>
         <button style="background:#e53935; color:white; width:100%; margin-top:10px;" id="deleteBtn">Delete</button><br>
         <button style="background:#555; color:white; width:100%; margin-top:10px;" onclick="closeActionPopup()">Cancel</button>
     </div>
 </div>
 
+<div id="txActionPopup" class="popup-overlay" onclick="closeTxActionPopup()">
+    <div class="popup-content" onclick="event.stopPropagation()">
+        <h3 style="color:var(--theme-color); margin-top:0;">டிரான்ஸாக்ஷன் மேலாண்மை</h3>
+        <button class="gold" id="txEditBtn" style="width:100%;">✏️ Edit Entry</button><br>
+        <button style="background:#e53935; color:white; width:100%; margin-top:10px;" id="txDeleteBtn">🗑️ Delete Entry</button><br>
+        <button style="background:#555; color:white; width:100%; margin-top:10px;" onclick="closeTxActionPopup()">Cancel</button>
+    </div>
+</div>
+
 <script>
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycbwphdRyzueYMNuhEaBGXl_ELo-xMP8-TC4YvnfPB3--ji0nR8CIRF37DhWFrx5KfXVi2w/exec";
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyKL_AB8WQnOYyWb4McL0-jnnEYD22PqO_UruatemH2VN6Xp8sq7x2SWpbzmoAcTRP6/exec";
+
 let users = JSON.parse(localStorage.getItem("financeUsers")) || [];
+let appConfig = JSON.parse(localStorage.getItem("financeConfig")) || {
+    title: "Finance Manager Pro",
+    width: 500,
+    color: "#ffd700",
+    showDash: true,
+    showSearch: true
+};
+
 let currentUser = null;
 let editIndex = null;
 
-function showLoading(show) { document.getElementById("loading").style.display = show ? "block" : "none"; }
+function showLoading(show) {
+    document.getElementById("loading").style.display = show ? "block" : "none";
+}
+
+function checkCloudConnection() {
+    const light = document.getElementById("ledLight");
+    if(CLOUD_URL && CLOUD_URL.trim() !== "") {
+        light.classList.add("connected");
+    } else {
+        light.classList.remove("connected");
+    }
+}
+
+// செட்டிங்ஸ்களை லோடு செய்யும் மற்றும் இயக்கும் ஃபங்க்ஷன்
+function initConfig() {
+    document.getElementById("setAppTitle").value = appConfig.title;
+    document.getElementById("setAppWidth").value = appConfig.width;
+    document.getElementById("setThemeColor").value = appConfig.color;
+    document.getElementById("switchDash").checked = appConfig.showDash;
+    document.getElementById("switchSearch").checked = appConfig.showSearch;
+    applyConfigUI();
+}
+
+function applySettings() {
+    appConfig.title = document.getElementById("setAppTitle").value || "Finance Manager Pro";
+    appConfig.width = document.getElementById("setAppWidth").value;
+    appConfig.color = document.getElementById("setThemeColor").value;
+    appConfig.showDash = document.getElementById("switchDash").checked;
+    appConfig.showSearch = document.getElementById("switchSearch").checked;
+    
+    localStorage.setItem("financeConfig", JSON.stringify(appConfig));
+    applyConfigUI();
+}
+
+function applyConfigUI() {
+    document.getElementById("headerTitleText").innerText = appConfig.title;
+    document.getElementById("widthVal").innerText = appConfig.width;
+    
+    document.documentElement.style.setProperty('--app-width', appConfig.width + 'px');
+    document.documentElement.style.setProperty('--theme-color', appConfig.color);
+    
+    // கலர் லைட் கிரேடியன்ட் அப்டேட்
+    let hex = appConfig.color;
+    document.documentElement.style.setProperty('--theme-gradient', `linear-gradient(145deg, ${hex}, #555)`);
+
+    document.getElementById("dashboardWrapper").style.display = appConfig.showDash ? "grid" : "none";
+    document.getElementById("searchBoxWrapper").style.display = appConfig.showSearch ? "block" : "none";
+}
+
+function openSettingsPopup() { document.getElementById("settingsPopup").style.display = "flex"; }
+function closeSettingsPopup() { document.getElementById("settingsPopup").style.display = "none"; }
 
 async function saveLocal(){ 
     localStorage.setItem("financeUsers", JSON.stringify(users)); 
@@ -155,7 +329,7 @@ async function saveLocal(){
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: "data=" + encodeURIComponent(JSON.stringify(users))
             });
-        } catch(e) { console.error("Cloud save failed", e); }
+        } catch(e) { console.error(e); }
         showLoading(false);
     }
 }
@@ -171,7 +345,7 @@ async function fetchFromCloud() {
             localStorage.setItem("financeUsers", JSON.stringify(users));
             renderUsers();
         }
-    } catch(e) { console.error("Cloud fetch failed", e); }
+    } catch(e) { console.error(e); }
     showLoading(false);
 }
 
@@ -215,16 +389,31 @@ function renderUsers(){
     document.getElementById("tenPercentTotal").innerText = "₹ " + tenTotal.toLocaleString();
 
     let filtered = users.filter(u => u.name.toLowerCase().includes(search) || (u.mobile && u.mobile.includes(search)));
-    filtered.sort((a,b)=> isRed(b) - isRed(a));
+    
+    // துல்லியமான வரிசை லாஜிக் (உங்களுக்குத் தேவையானபடி): 
+    // குறைந்த கடன் உள்ளவர்கள் முதலில் வருவார்கள், அதிக கடன் உள்ளவர்கள் (பெரிய எண்கள்) அடியில் செல்வார்கள் (Descending order of balance).
+    filtered.sort((a, b) => {
+        let a_red = isRed(a) ? 1 : 0;
+        let b_red = isRed(b) ? 1 : 0;
+        
+        if (a_red !== b_red) {
+            return b_red - a_red; // Red யூசர்கள் எப்போதும் மேல் குரூப்
+        }
+        return b.transactions.length - a.transactions.length || getBalance(b) - getBalance(a); 
+    });
 
     filtered.forEach((u)=>{
         let realIdx = users.indexOf(u);
         let card = document.createElement("div");
         card.className = "user-card" + (isRed(u) ? " redbg" : "");
         card.onclick = () => openUser(realIdx);
+        
         card.innerHTML = `
             <div class="row">
-                <div><b>${u.name}</b><br><small style="font-size:14px;">${u.mobile || ''}</small></div>
+                <div>
+                    <b>${u.name}</b><br>
+                    <small style="font-size:13px;">${u.mobile || ''}</small>
+                </div>
                 <div style="font-weight:bold;">₹ ${getBalance(u).toLocaleString()}</div>
             </div>
             <button class="menu-dot-btn" onclick="triggerActionMenu(event, ${realIdx}, '${u.name}')">&#8942;</button>
@@ -245,9 +434,20 @@ function openUser(i){
     renderTransactions();
 }
 
+function setupLongPress(element, callback) {
+    let pressTimer;
+    const start = (e) => { pressTimer = setTimeout(() => callback(), 800); };
+    const cancel = () => { clearTimeout(pressTimer); };
+    element.addEventListener("mousedown", start);
+    element.addEventListener("touchstart", start, { passive: true });
+    element.addEventListener("click", cancel);
+    element.addEventListener("mouseout", cancel);
+    element.addEventListener("touchend", cancel);
+    element.addEventListener("touchcancel", cancel);
+}
+
 function goBack(){
     document.getElementById("mainScreen").classList.remove("hidden");
-    document.getElementById("userScreen").classList.hidden = true; // மறைக்கப்படும்
     document.getElementById("userScreen").classList.add("hidden");
     renderUsers();
 }
@@ -266,18 +466,24 @@ function saveTransaction(){
     let d = document.getElementById("tDate").value, desc = document.getElementById("tDesc").value;
     let c = document.getElementById("tCredit").value, deb = document.getElementById("tDebit").value;
     if(!d) return alert("Date is required!");
+
     let tx = { date: d, desc: desc, credit: c, debit: deb };
-    if(editIndex === null) { users[currentUser].transactions.push(tx); }
-    else { users[currentUser].transactions[editIndex] = tx; editIndex = null; }
+    if(editIndex === null) {
+        users[currentUser].transactions.push(tx);
+    } else {
+        users[currentUser].transactions[editIndex] = tx; 
+        editIndex = null; 
+    }
+
     saveLocal();
     closeEntryForm();
     renderTransactions();
 }
 
-// மாற்றப்பட்ட பகுதி: கடைசி 11 எண்ட்ரிகள் மட்டும்
 function renderTransactions(){
     let u = users[currentUser];
     u.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
     document.getElementById("profName").innerText = u.name;
     document.getElementById("profMobile").innerText = u.mobile || "No Mobile";
     document.getElementById("profBalance").innerText = "Bal: ₹" + getBalance(u).toLocaleString();
@@ -292,7 +498,8 @@ function renderTransactions(){
         display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
     });
 
-    display.reverse().slice(0, 11).reverse().forEach((tx) => {
+    // புதிய ட்ரான்ஸாக்ஷன் வரிசை தலைகீழாக (Newest First) மேலே காட்டும்
+    display.reverse().forEach((tx) => {
         let row = document.createElement("tr");
         if(Number(tx.credit) > 0) row.className = "credit-row";
         else if(Number(tx.debit) > 0) row.className = "debit-row";
@@ -302,14 +509,19 @@ function renderTransactions(){
                          <td>${tx.desc||""}</td>
                          <td>${tx.credit||""}</td>
                          <td>${tx.debit||""}</td>
-                         <td><b>${tx.cumulative}</b></td>
-                         <td>
-                            <button class="action-icon" onclick="editTransaction(${tx.actualIdx})">✏️</button>
-                            <button class="action-icon" onclick="deleteTransaction(${tx.actualIdx})">🗑️</button>
-                         </td>`;
+                         <td><b>${tx.cumulative}</b></td>`;
+                         
+        setupLongPress(row, () => { openTxActionPopup(tx.actualIdx); });
         tableBody.appendChild(row);
     });
 }
+
+function openTxActionPopup(idx) {
+    document.getElementById("txActionPopup").style.display = "flex";
+    document.getElementById("txEditBtn").onclick = () => { closeTxActionPopup(); editTransaction(idx); };
+    document.getElementById("txDeleteBtn").onclick = () => { closeTxActionPopup(); deleteTransaction(idx); };
+}
+function closeTxActionPopup() { document.getElementById("txActionPopup").style.display = "none"; }
 
 function editTransaction(i){
     let tx = users[currentUser].transactions[i];
@@ -322,7 +534,11 @@ function editTransaction(i){
 }
 
 function deleteTransaction(i){ 
-    if(confirm("இந்த எண்ட்ரியை நீக்கவா?")){ users[currentUser].transactions.splice(i,1); saveLocal(); renderTransactions(); } 
+    if(confirm("இந்த எண்ட்ரியை நீக்கவா?")){ 
+        users[currentUser].transactions.splice(i,1); 
+        saveLocal(); 
+        renderTransactions(); 
+    } 
 }
 
 function addUser(){
@@ -330,8 +546,8 @@ function addUser(){
     if(n){ users.push({name:n,mobile:m,transactions:[]}); saveLocal(); renderUsers(); }
 }
 function editUser(i){
-    let newName = prompt("Name:", users[i].name);
-    let newMobile = prompt("Mobile:", users[i].mobile);
+    let currentName = users[i].name; let currentMobile = users[i].mobile;
+    let newName = prompt("Name:", currentName); let newMobile = prompt("Mobile:", currentMobile);
     if(newName !== null) users[i].name = newName;
     if(newMobile !== null) users[i].mobile = newMobile;
     saveLocal(); closeActionPopup(); renderUsers();
@@ -359,7 +575,12 @@ function importData(event){
     r.readAsText(f);
 }
 
-window.onload = function() { renderUsers(); fetchFromCloud(); };
+window.onload = function() {
+    initConfig();
+    checkCloudConnection();
+    renderUsers();
+    fetchFromCloud();
+};
 </script>
 </body>
 </html>
