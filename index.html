@@ -9,13 +9,19 @@
     --theme-color: #ffd700;
     --theme-gradient: linear-gradient(145deg, #ffd700, #b8860b);
     --app-width: 500px;
+    --app-height: 100vh;
 }
 body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#111;color:white;user-select:none;-webkit-user-select:none;}
 
-/* டைனமிக் அகலம் மாறும் வசதி */
-.wrapper{max-width: var(--app-width); margin:auto; padding-bottom: 50px; background:#111; min-height:100vh; transition: max-width 0.3s;}
+.wrapper{
+    max-width: var(--app-width); 
+    margin:auto; 
+    padding-bottom: 50px; 
+    background:#111; 
+    min-height: var(--app-height); 
+    transition: max-width 0.3s, min-height 0.3s;
+}
 
-/* Header & G Neon Glow Style */
 header{background: var(--theme-gradient); color:#111; text-align:center; padding:18px; font-size:22px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;}
 
 .indicator-container {
@@ -24,7 +30,6 @@ header{background: var(--theme-gradient); color:#111; text-align:center; padding
     top: 50%;
     transform: translateY(-50%);
 }
-/* 'G' வடிவ ஒளிரும் நியான் விளக்கு */
 .g-led {
     width: 28px;
     height: 28px;
@@ -46,7 +51,6 @@ header{background: var(--theme-gradient); color:#111; text-align:center; padding
     box-shadow: 0 0 15px #00ff00, inset 0 0 5px #00ff00, 0 0 5px #fff;
 }
 
-/* Dashboard */
 .dashboard{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;padding:10px;}
 .stat-box{background:#222;padding:15px 10px;border-radius:10px;text-align:center;border:1px solid #333;}
 .stat-box.red-border{border: 2px solid #e53935;}
@@ -56,7 +60,6 @@ header{background: var(--theme-gradient); color:#111; text-align:center; padding
 .search-container{padding:10px;}
 .search-input{width:100%; padding:12px; border-radius:10px; border:1px solid var(--theme-color); background:#222; color:white; box-sizing: border-box; font-size: 16px;}
 
-/* 5 சமமான வட்டார வடிவ பெரிய பட்டன்கள் */
 .top-buttons {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -78,14 +81,35 @@ header{background: var(--theme-gradient); color:#111; text-align:center; padding
 }
 .gold{background: var(--theme-color); color:#111;}
 
-/* User Cards */
+/* செட்டிங்ஸ் உள்ளே இருக்கும் ஸ்டோரேஜ் பட்டன் ஸ்டைல் */
+.storage-setting-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 5px;
+}
+.storage-btn {
+    padding: 10px;
+    border: 1px solid #444;
+    background: #333;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.storage-btn.active-storage {
+    background: #1f7a1f;
+    border-color: #00ff00;
+    color: white;
+}
+
 .user-card{width:calc(100% - 20px);margin:10px auto;padding:15px;border-radius:15px;background:#222;cursor:pointer;border: 1px solid #333;box-sizing: border-box; position: relative;}
 .user-card.redbg{background:linear-gradient(145deg, #8b0000, #5a0000); border-color: #ff4444;}
 .row{display:flex;justify-content:space-between; align-items:center; font-size: 16px; padding-right: 35px;}
 
 .menu-dot-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; color: var(--theme-color); font-size: 22px; border: none; padding: 5px; cursor: pointer; z-index: 10;}
 
-/* Profile Header */
 .profile-header{background:#222; padding:15px 20px; border-bottom: 2px solid var(--theme-color); margin-bottom: 5px; position: relative;}
 .profile-header h2{margin:0 0 15px 0; color: var(--theme-color); text-align: center; font-size: 24px; padding-top: 5px;}
 .prof-header-buttons{display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;}
@@ -94,7 +118,6 @@ header{background: var(--theme-gradient); color:#111; text-align:center; padding
 #profMobile { margin: 0; font-size: 18px; color: var(--theme-color); font-weight: bold; }
 #profBalance { margin: 0; font-size: 20px; color: #ffffff; font-weight: 900; }
 
-/* Table */
 .table-container{overflow-x:auto; padding:10px;}
 table{width:100%;border-collapse:collapse; background: #1a1a1a; border-radius: 10px;}
 th,td{padding:10px 4px;text-align:center; border-bottom: 1px solid #444; font-size: 13px;}
@@ -104,14 +127,12 @@ th{background:#333; color: var(--theme-color);}
 .debit-row{background-color: #b91c1c !important; color: white !important;}
 .pending-row{background-color: #2c2c2c; color: var(--theme-color);}
 
-/* Popups / Settings Switch Styles */
 .popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;justify-content:center;align-items:center;}
 .popup-content{background:#222;padding:22px;border-radius:20px;text-align:center;border:2px solid var(--theme-color);width:90%; max-width: 360px; max-height: 85vh; overflow-y: auto;}
 
 input[type="date"], input[type="text"], input[type="number"]{width:100%;margin:8px 0;padding:12px;border:none;border-radius:8px;background:#333;color:white; box-sizing: border-box; font-size: 16px;}
 .hidden{display:none;}
 
-/* Switch Toggle Style */
 .setting-row { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; text-align: left; }
 .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -130,7 +151,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 <div class="wrapper">
     <header>
         <span id="headerTitleText">Finance Manager Pro</span>
-        <!-- G நியான் ஒளிரும் விளக்கு -->
         <div class="indicator-container">
             <div id="ledLight" class="g-led">G</div>
         </div>
@@ -148,7 +168,6 @@ input:checked + .slider:before { transform: translateX(22px); }
             <div class="stat-box red-border"><small style="color:#ff5252;">10% Collection</small><h2 id="tenPercentTotal">0</h2></div>
         </div>
 
-        <!-- 5 சீரான பெரிய பட்டன்கள் -->
         <div class="top-buttons">
             <button class="gold" onclick="addUser()">+ User</button>
             <button class="gold" onclick="fetchFromCloud()">🔄 Reset</button>
@@ -157,6 +176,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <button style="background:#444; color:white;" onclick="openSettingsPopup()">⚙️ Set</button>
             <input type="file" id="importFile" hidden onchange="importData(event)">
         </div>
+
         <div id="userList"></div>
     </div>
 
@@ -174,7 +194,6 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
 
         <div class="table-container">
-            <small style="color:#aaa; display:block; text-align:center; margin-bottom:5px;">💡 லாங் பிரஸ் (Long Press) செய்து எடிட்/டெலிட் செய்யவும்</small>
             <table>
                 <thead><tr><th>Date</th><th>Desc</th><th>Cr</th><th>Db</th><th>Bal</th></tr></thead>
                 <tbody id="transactionTable"></tbody>
@@ -183,7 +202,6 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- செட்டிங்ஸ் கண்ட்ரோல் பாப்-அப் பேனல் -->
 <div id="settingsPopup" class="popup-overlay" onclick="closeSettingsPopup()">
     <div class="popup-content" onclick="event.stopPropagation()">
         <h3 style="color:var(--theme-color); margin-top:0;">⚙️ App Settings</h3>
@@ -196,6 +214,19 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div style="text-align:left; margin-bottom:12px;">
             <label style="font-size:14px; color:#aaa;">ஆப் அகலம் (Width): <span id="widthVal">500</span>px</label>
             <input type="range" id="setAppWidth" min="360" max="800" step="10" style="width:100%; margin-top:5px;" oninput="applySettings()">
+        </div>
+
+        <div style="text-align:left; margin-bottom:12px;">
+            <label style="font-size:14px; color:#aaa;">ஆப் உயரம் (Height): <span id="heightVal">100</span>%</label>
+            <input type="range" id="setAppHeight" min="50" max="100" step="5" style="width:100%; margin-top:5px;" oninput="applySettings()">
+        </div>
+
+        <div style="text-align:left; margin-bottom:15px;">
+            <label style="font-size:14px; color:#aaa;">டேட்டா சேமிப்பு முறை (Storage Mode):</label>
+            <div class="storage-setting-container">
+                <button id="popBtnLocal" class="storage-btn" onclick="switchStorageMode('local')">📱 Local</button>
+                <button id="popBtnGSheet" class="storage-btn" onclick="switchStorageMode('cloud')">📊 G-Sheet</button>
+            </div>
         </div>
 
         <div style="text-align:left; margin-bottom:15px;">
@@ -252,15 +283,17 @@ input:checked + .slider:before { transform: translateX(22px); }
 </div>
 
 <script>
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyKL_AB8WQnOYyWb4McL0-jnnEYD22PqO_UruatemH2VN6Xp8sq7x2SWpbzmoAcTRP6/exec";
+const CLOUD_URL = "";
 
-let users = JSON.parse(localStorage.getItem("financeUsers")) || [];
+let users = [];
 let appConfig = JSON.parse(localStorage.getItem("financeConfig")) || {
     title: "Finance Manager Pro",
     width: 500,
+    height: 100,
     color: "#ffd700",
     showDash: true,
-    showSearch: true
+    showSearch: true,
+    storageMode: "local"
 };
 
 let currentUser = null;
@@ -270,28 +303,31 @@ function showLoading(show) {
     document.getElementById("loading").style.display = show ? "block" : "none";
 }
 
-function checkCloudConnection() {
+// கூகுள் ஷீட் கனெக்ஷனை சரிபார்க்கும் ஸ்மார்ட் LED விளக்கு
+function updateLedStatus() {
     const light = document.getElementById("ledLight");
-    if(CLOUD_URL && CLOUD_URL.trim() !== "") {
+    if(appConfig.storageMode === "cloud" && CLOUD_URL && CLOUD_URL.trim() !== "") {
         light.classList.add("connected");
     } else {
         light.classList.remove("connected");
     }
 }
 
-// செட்டிங்ஸ்களை லோடு செய்யும் மற்றும் இயக்கும் ஃபங்க்ஷன்
 function initConfig() {
     document.getElementById("setAppTitle").value = appConfig.title;
     document.getElementById("setAppWidth").value = appConfig.width;
+    document.getElementById("setAppHeight").value = appConfig.height || 100;
     document.getElementById("setThemeColor").value = appConfig.color;
     document.getElementById("switchDash").checked = appConfig.showDash;
     document.getElementById("switchSearch").checked = appConfig.showSearch;
     applyConfigUI();
+    updateStorageButtonsUI();
 }
 
 function applySettings() {
     appConfig.title = document.getElementById("setAppTitle").value || "Finance Manager Pro";
     appConfig.width = document.getElementById("setAppWidth").value;
+    appConfig.height = document.getElementById("setAppHeight").value || 100;
     appConfig.color = document.getElementById("setThemeColor").value;
     appConfig.showDash = document.getElementById("switchDash").checked;
     appConfig.showSearch = document.getElementById("switchSearch").checked;
@@ -303,11 +339,12 @@ function applySettings() {
 function applyConfigUI() {
     document.getElementById("headerTitleText").innerText = appConfig.title;
     document.getElementById("widthVal").innerText = appConfig.width;
+    document.getElementById("heightVal").innerText = appConfig.height || 100;
     
     document.documentElement.style.setProperty('--app-width', appConfig.width + 'px');
+    document.documentElement.style.setProperty('--app-height', (appConfig.height || 100) + 'vh');
     document.documentElement.style.setProperty('--theme-color', appConfig.color);
     
-    // கலர் லைட் கிரேடியன்ட் அப்டேட்
     let hex = appConfig.color;
     document.documentElement.style.setProperty('--theme-gradient', `linear-gradient(145deg, ${hex}, #555)`);
 
@@ -315,12 +352,45 @@ function applyConfigUI() {
     document.getElementById("searchBoxWrapper").style.display = appConfig.showSearch ? "block" : "none";
 }
 
+// செட்டிங்ஸ் உள்ளே டேட்டா மோடை மாற்றுதல்
+function switchStorageMode(mode) {
+    appConfig.storageMode = mode;
+    localStorage.setItem("financeConfig", JSON.stringify(appConfig));
+    updateStorageButtonsUI();
+    updateLedStatus();
+    loadDataBasedOnMode();
+}
+
+function updateStorageButtonsUI() {
+    let mode = appConfig.storageMode || "local";
+    document.getElementById("popBtnLocal").classList.remove("active-storage");
+    document.getElementById("popBtnGSheet").classList.remove("active-storage");
+    
+    if(mode === "cloud") {
+        document.getElementById("popBtnGSheet").classList.add("active-storage");
+    } else {
+        document.getElementById("popBtnLocal").classList.add("active-storage");
+    }
+}
+
+function loadDataBasedOnMode() {
+    if(appConfig.storageMode === "cloud") {
+        fetchFromCloud();
+    } else {
+        users = JSON.parse(localStorage.getItem("financeUsers")) || [];
+        renderUsers();
+    }
+}
+
 function openSettingsPopup() { document.getElementById("settingsPopup").style.display = "flex"; }
 function closeSettingsPopup() { document.getElementById("settingsPopup").style.display = "none"; }
 
 async function saveLocal(){ 
-    localStorage.setItem("financeUsers", JSON.stringify(users)); 
-    if(CLOUD_URL) {
+    if(appConfig.storageMode === "local") {
+        localStorage.setItem("financeUsers", JSON.stringify(users)); 
+    } else if(appConfig.storageMode === "cloud" && CLOUD_URL) {
+        // கூகுள் ஷீட் மோடில் இருந்தால் மட்டும் கிளவுடிற்கு அனுப்பும்
+        localStorage.setItem("financeUsers", JSON.stringify(users)); // பேக்கப்பிற்காக லோக்கலிலும் இருக்கும்
         showLoading(true);
         try {
             await fetch(CLOUD_URL, {
@@ -335,7 +405,7 @@ async function saveLocal(){
 }
 
 async function fetchFromCloud() {
-    if(!CLOUD_URL) return;
+    if(!CLOUD_URL || appConfig.storageMode !== "cloud") return;
     showLoading(true);
     try {
         let res = await fetch(CLOUD_URL);
@@ -390,16 +460,20 @@ function renderUsers(){
 
     let filtered = users.filter(u => u.name.toLowerCase().includes(search) || (u.mobile && u.mobile.includes(search)));
     
-    // துல்லியமான வரிசை லாஜிக் (உங்களுக்குத் தேவையானபடி): 
-    // குறைந்த கடன் உள்ளவர்கள் முதலில் வருவார்கள், அதிக கடன் உள்ளவர்கள் (பெரிய எண்கள்) அடியில் செல்வார்கள் (Descending order of balance).
+    // துல்லியமான உங்களது புதிய எளிய அடுக்குமுறை லாஜிக்:
+    // 1. முதலில் சிகப்பு நிற யூசர்கள் (Red Users) ஏறுவரிசையில் (2000 முதல் 20000 வரை)
+    // 2. அடுத்து சாதாரண யூசர்கள் (Normal Users) ஏறுவரிசையில் (2000 முதல் 20000 வரை)
     filtered.sort((a, b) => {
         let a_red = isRed(a) ? 1 : 0;
         let b_red = isRed(b) ? 1 : 0;
         
+        // சிகப்பு யூசர்களை மேலே தள்ளவும்
         if (a_red !== b_red) {
-            return b_red - a_red; // Red யூசர்கள் எப்போதும் மேல் குரூப்
+            return b_red - a_red; 
         }
-        return b.transactions.length - a.transactions.length || getBalance(b) - getBalance(a); 
+        
+        // இரு தரப்பினருக்கும் தொகை குறைவிலிருந்து அதிகமாக ஏறுவரிசையில் (Ascending) அடுக்கப்படும்
+        return Math.abs(getBalance(a)) - Math.abs(getBalance(b));
     });
 
     filtered.forEach((u)=>{
@@ -498,7 +572,6 @@ function renderTransactions(){
         display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
     });
 
-    // புதிய ட்ரான்ஸாக்ஷன் வரிசை தலைகீழாக (Newest First) மேலே காட்டும்
     display.reverse().forEach((tx) => {
         let row = document.createElement("tr");
         if(Number(tx.credit) > 0) row.className = "credit-row";
@@ -577,9 +650,8 @@ function importData(event){
 
 window.onload = function() {
     initConfig();
-    checkCloudConnection();
-    renderUsers();
-    fetchFromCloud();
+    updateLedStatus();
+    loadDataBasedOnMode();
 };
 </script>
 </body>
