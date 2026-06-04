@@ -570,8 +570,10 @@ function getTenPercent(u) {
     return loan ? (Number(loan.debit) * 0.10) : 0;
 }
 
+// சரிசெய்யப்பட்ட மெயின் renderUsers ஃபங்க்ஷன் (சர்ச் பிழைகள் முழுமையாக நீக்கப்பட்டது)
 function renderUsers(){
-    const search = document.getElementById("userSearch").value.toLowerCase();
+    const searchInput = document.getElementById("userSearch");
+    const search = searchInput ? searchInput.value.toLowerCase().trim() : "";
     const listDiv = document.getElementById("userList");
     listDiv.innerHTML = "";
 
@@ -586,7 +588,12 @@ function renderUsers(){
     document.getElementById("redUsersCount").innerText = redCount;
     document.getElementById("tenPercentTotal").innerText = "₹ " + tenTotal.toLocaleString();
 
-    let filtered = users.filter(u => u.name.toLowerCase().includes(search) || (u.mobile && u.mobile.includes(search)));
+    // மொபைல் எண்கள் மற்றும் பெயர்கள் String வடிவில் இருப்பதை உறுதி செய்து வடிகட்டுதல்
+    let filtered = users.filter(u => {
+        let nameMatch = u.name ? String(u.name).toLowerCase().includes(search) : false;
+        let mobileMatch = u.mobile ? String(u.mobile).toLowerCase().includes(search) : false;
+        return nameMatch || mobileMatch;
+    });
     
     filtered.sort((a, b) => {
         let a_red = isRed(a) ? 1 : 0;
