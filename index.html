@@ -359,12 +359,10 @@ let appConfig = JSON.parse(localStorage.getItem("financeConfig")) || {
 let currentUser = null;
 let editIndex = null;
 
-// லோடிங் காட்டும் வசதி
 function showLoading(show) {
     document.getElementById("loading").style.display = show ? "block" : "none";
 }
 
-// LED லைட் நிலையை அப்டேட் செய்யும் வசதி
 function updateLedStatus() {
     const light = document.getElementById("ledLight");
     if(appConfig.storageMode === "cloud" && CLOUD_URL && CLOUD_URL.trim() !== "") {
@@ -374,7 +372,6 @@ function updateLedStatus() {
     }
 }
 
-// ஆரம்ப கட்ட செட்டிங்ஸ் அமைப்பு
 function initConfig() {
     document.getElementById("setAppTitle").value = appConfig.title;
     document.getElementById("setAppWidth").value = appConfig.width;
@@ -388,13 +385,11 @@ function initConfig() {
     updateStorageButtonsUI();
 }
 
-// முன்பே அமைக்கப்பட்ட வண்ணங்களை மாற்றுவது
 function setPresetColor(colorCode) {
     document.getElementById("setThemeColor").value = colorCode;
     applySettings();
 }
 
-// செட்டிங்ஸை சேமிப்பது
 function applySettings() {
     appConfig.title = document.getElementById("setAppTitle").value || "Finance Manager Pro";
     appConfig.width = document.getElementById("setAppWidth").value;
@@ -409,7 +404,6 @@ function applySettings() {
     applyConfigUI();
 }
 
-// ஸ்கிரீன் அளவுகளை மாற்றுவது
 function applyConfigUI() {
     document.getElementById("headerTitleText").innerText = appConfig.title;
     document.getElementById("widthVal").innerText = appConfig.width;
@@ -432,7 +426,6 @@ function applyConfigUI() {
     document.getElementById("searchBoxWrapper").style.display = appConfig.showSearch ? "block" : "none";
 }
 
-// சேமிப்பு முறையை மாற்றுவது (Local / Cloud)
 function switchStorageMode(mode) {
     appConfig.storageMode = mode;
     localStorage.setItem("financeConfig", JSON.stringify(appConfig));
@@ -496,41 +489,34 @@ async function fetchFromCloud() {
     showLoading(false);
 }
 
-// தேதி வடிவத்தை 1-5-26 அல்லது 5-6-26 என மாற்றும் மிக முக்கிய பகுதி
 function formatDate(d){ 
     if(!d) return ""; 
     let dateStr = String(d).trim();
     
-    // புதிய வடிவம்: 2026-5-T1 அல்லது 2026-05-T1 என வந்தால்
     if (dateStr.includes('-T') || (dateStr.includes('-') && dateStr.toUpperCase().includes('T'))) {
-        // முதலில் T என்ற எழுத்துக்குப் பின் இருக்கும் பகுதியை மட்டும் தனியாக எடுக்கவும்
         let upperStr = dateStr.toUpperCase();
         let tIndex = upperStr.indexOf('T');
-        let datePart = dateStr.substring(0, tIndex); // "2026-5-"
-        let dayPart = dateStr.substring(tIndex + 1);  // "1" அல்லது "18:30:00..."
+        let datePart = dateStr.substring(0, tIndex); 
+        let dayPart = dateStr.substring(tIndex + 1);  
         
-        // ஒருவேளை முழு ISO நேரமாக இருந்தால் வெறும் நாளை மட்டும் பிரிக்க
         if(dayPart.includes(':')) {
             dayPart = dayPart.split(':')[0];
-            // முந்தைய எண்களை மட்டும் எடுக்க (உம்: 29T18...)
             let cleanPart = dateStr.split('T')[0];
             if(cleanPart.includes('-')) {
                 let p = cleanPart.split('-');
-                // ஒருவேளை தலைகீழாக இருந்தால் சரிசெய்ய
                 if(p[0].length === 4) return `${parseInt(p[2],10)}-${parseInt(p[1],10)}-${p[0].substring(2,4)}`;
             }
         }
         
         let parts = datePart.split('-');
         if(parts.length >= 2) {
-            let year = parts[0].substring(2, 4); // "26"
-            let month = parseInt(parts[1], 10); // "5"
-            let day = parseInt(dayPart, 10);   // "1"
+            let year = parts[0].substring(2, 4); 
+            let month = parseInt(parts[1], 10); 
+            let day = parseInt(dayPart, 10);   
             return `${day}-${month}-${year}`;
         }
     }
     
-    // முந்தைய பழைய நீண்ட ISO Format (29T18:30:00.000Z-05-2026) ஆக இருந்தால்
     if (dateStr.includes('T') && dateStr.includes('-')) {
         let parts = dateStr.split('-');
         if (parts.length === 3) {
@@ -541,12 +527,11 @@ function formatDate(d){
         }
     }
     
-    // சாதாரண வடிவமாக (2026-06-05) இருந்தால்
     if (dateStr.includes('-')) {
         let parts = dateStr.split("-");
-        if (parts[0].length === 4) { // YYYY-MM-DD
+        if (parts[0].length === 4) { 
             return `${parseInt(parts[2], 10)}-${parseInt(parts[1], 10)}-${parts[0].substring(2, 4)}`;
-        } else if (parts[2].length === 4) { // DD-MM-YYYY
+        } else if (parts[2].length === 4) { 
             return `${parseInt(parts[0], 10)}-${parseInt(parts[1], 10)}-${parts[2].substring(2, 4)}`;
         }
     }
@@ -558,10 +543,11 @@ function getBalance(u){
     return u.transactions.reduce((a,t)=>a+(Number(t.credit||0)-Number(t.debit||0)), 0);
 }
 
+// மாற்றியமைக்கப்பட்ட லாஜிக்: கிரெடிட் அல்லது டெபிட்டில் 0 இருந்தாலும் அல்லது எந்த எண்ணும் இல்லை என்றாலும் அது சிகப்பு நிறமாக மாறாது.
 function isRed(u) {
     if (!u.transactions || u.transactions.length === 0) return false;
     let today = new Date().toISOString().split("T")[0];
-    return u.transactions.some(t => t.date <= today && !Number(t.credit) && !Number(t.debit));
+    return u.transactions.some(t => t.date <= today && (t.credit === "" || t.credit === null || t.credit === undefined) && (t.debit === "" || t.debit === null || t.debit === undefined));
 }
 
 function getTenPercent(u) {
@@ -570,7 +556,6 @@ function getTenPercent(u) {
     return loan ? (Number(loan.debit) * 0.10) : 0;
 }
 
-// சரிசெய்யப்பட்ட மெயின் renderUsers ஃபங்க்ஷன் (சர்ச் பிழைகள் முழுமையாக நீக்கப்பட்டது)
 function renderUsers(){
     const searchInput = document.getElementById("userSearch");
     const search = searchInput ? searchInput.value.toLowerCase().trim() : "";
@@ -588,7 +573,6 @@ function renderUsers(){
     document.getElementById("redUsersCount").innerText = redCount;
     document.getElementById("tenPercentTotal").innerText = "₹ " + tenTotal.toLocaleString();
 
-    // மொபைல் எண்கள் மற்றும் பெயர்கள் String வடிவில் இருப்பதை உறுதி செய்து வடிகட்டுதல்
     let filtered = users.filter(u => {
         let nameMatch = u.name ? String(u.name).toLowerCase().includes(search) : false;
         let mobileMatch = u.mobile ? String(u.mobile).toLowerCase().includes(search) : false;
@@ -709,22 +693,22 @@ function renderTransactions(){
     
     let curBal = 0, display = [];
     u.transactions.forEach((tx, originalIndex) => {
-        let isNote = (!Number(tx.credit) && !Number(tx.debit));
+        let isNote = (tx.credit === "" && tx.debit === "");
         if(!isNote) curBal += (Number(tx.credit||0) - Number(tx.debit||0));
         display.push({ ...tx, cumulative: isNote ? "" : curBal, actualIdx: originalIndex });
     });
 
     display.reverse().forEach((tx) => {
         let row = document.createElement("tr");
-        if(Number(tx.credit) > 0) row.className = "credit-row";
-        else if(Number(tx.debit) > 0) row.className = "debit-row";
+        if(Number(tx.credit) > 0 || tx.credit === "0" || tx.credit === 0) row.className = "credit-row";
+        else if(Number(tx.debit) > 0 || tx.debit === "0" || tx.debit === 0) row.className = "debit-row";
         else row.className = "pending-row";
 
         row.innerHTML = `<td>${formatDate(tx.date)}</td>
                          <td>${tx.desc||""}</td>
                          <td>${tx.credit||""}</td>
                          <td>${tx.debit||""}</td>
-                         <td><b>${tx.cumulative}</b></td>`;
+                         <td><b>${tx.cumulative !== "" ? "₹ "+tx.cumulative.toLocaleString() : ""}</b></td>`;
                          
         setupLongPress(row, () => { openTxActionPopup(tx.actualIdx); });
         tableBody.appendChild(row);
