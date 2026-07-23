@@ -252,7 +252,7 @@ if(!cfg.cats || cfg.cats.length === 0) {
 
 let db = [];
 let activeFilters = [];
-let currentViewMode = "CR"; // Default CREDIT
+let currentViewMode = "CR"; 
 const webAppUrl = "https://script.google.com/macros/s/AKfycbzSwHEzeZZCQO0bs1radLhfjq96sHxaiH446aH1N1KeluYioM5plF_rL_nJWkDoHqTUkw/exec";
 
 function init() {
@@ -327,7 +327,7 @@ function loadDataFromSheet() {
             db = Array.isArray(data) ? data.map(item => ({
                 ...item,
                 date: cleanDate(item.date),
-                type: (item.type && item.type.toUpperCase() === "DR") ? "DR" : "CR"
+                type: item.type ? String(item.type).toUpperCase() : "CR"
             })) : [];
             led.classList.remove('disconnected', 'saving', 'a9');
             led.classList.add('connected');
@@ -447,9 +447,6 @@ function refresh() {
     db.sort((a, b) => new Date(b.date) - new Date(a.date));
     
     const now = new Date();
-    const currentMonthNum = now.getMonth(); 
-    const currentYearNum = now.getFullYear();
-    
     const monthYearStr = now.toLocaleDateString('ta-IN', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').innerText = monthYearStr;
 
@@ -458,7 +455,6 @@ function refresh() {
     
     let filtered = getFilteredData();
 
-    // மேலிருக்கும் Category Cards தொகை கணக்கீடு
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let v = (t.type === "CR") ? amt : -amt; 
@@ -466,7 +462,6 @@ function refresh() {
         grand += v;
     });
 
-    // டேபிளில் டேட்டா காண்பித்தல்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let formattedDate = t.date ? cleanDate(t.date).split('-').reverse().join('/') : "";
@@ -510,7 +505,6 @@ function getFilteredData() {
         const mMob = (!sM || t.mob.includes(sM));
         const mDesc = (!sDes || t.desc.toLowerCase().includes(sDes));
         
-        // CREDIT / DEBIT / BOTH ஃபில்டர் சரி செய்யப்பட்டது
         let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
         const mView = (currentViewMode === "BOTH" || itemType === currentViewMode);
         
