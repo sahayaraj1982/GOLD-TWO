@@ -99,7 +99,10 @@
                         <select id="eCat" class="border-2 border-black p-3 rounded-xl"></select>
                         <input type="text" id="eDesc" placeholder="DISCRIPTION" class="border-2 border-black p-3 rounded-xl">
                         <input type="number" id="eAmt" placeholder="AMOUNT" class="border-2 border-black p-3 rounded-xl">
-                        <select id="eType" class="border-2 border-black p-3 rounded-xl"><option value="CR">IN (+)</option><option value="DR">OUT (-)</option></select>
+                        <select id="eType" class="border-2 border-black p-3 rounded-xl">
+                            <option value="CR">CREDIT (+)</option>
+                            <option value="DR">DEBIT (-)</option>
+                        </select>
                     </div>
                     <button onclick="saveData()" id="saveBtn" class="w-full py-4 mt-6 rounded-xl text-xl btn-style bg-green-600">SAVE ✅</button>
                 </div>
@@ -131,7 +134,17 @@
 
             <div class="mt-8 bg-white border-4 border-black rounded-3xl overflow-hidden shadow-2xl">
                 <table class="w-full text-sm">
-                    <thead class="bg-black text-white"><tr><th class="p-3">DATE</th><th class="p-3">MOBILE</th><th class="p-3">CATAGORY</th><th class="p-3">DISCRIPTION</th><th class="p-3 text-right">AMOUNT</th><th class="p-3 text-center">ACTION</th></tr></thead>
+                    <thead class="bg-black text-white">
+                        <tr>
+                            <th class="p-3">DATE</th>
+                            <th class="p-3">MOBILE</th>
+                            <th class="p-3">CATAGORY</th>
+                            <th class="p-3">DISCRIPTION</th>
+                            <th class="p-3">TYPE</th>
+                            <th class="p-3 text-right">AMOUNT</th>
+                            <th class="p-3 text-center">ACTION</th>
+                        </tr>
+                    </thead>
                     <tbody id="resTable" class="text-center"></tbody>
                 </table>
             </div>
@@ -239,7 +252,7 @@ if(!cfg.cats || cfg.cats.length === 0) {
 
 let db = [];
 let activeFilters = [];
-let currentViewMode = "CR"; 
+let currentViewMode = "CR"; // Default CREDIT
 const webAppUrl = "https://script.google.com/macros/s/AKfycbzSwHEzeZZCQO0bs1radLhfjq96sHxaiH446aH1N1KeluYioM5plF_rL_nJWkDoHqTUkw/exec";
 
 function init() {
@@ -281,14 +294,12 @@ function startClock() {
     setInterval(update, 1000);
 }
 
-// தேதியை பாதுகாப்பாக YYYY-MM-DD பார்மட்டுக்கு மாற்றும் வசதி
 function cleanDate(dateStr) {
     if(!dateStr) return "";
     let str = String(dateStr);
     if(str.includes("T")) {
         str = str.split("T")[0];
     }
-    // ஒருவேளை முழு டேட் ஆப்ஜெக்ட் ஸ்டிரிங்காக வந்தால்
     let d = new Date(str);
     if(!isNaN(d.getTime())) {
         let year = d.getFullYear();
@@ -315,7 +326,8 @@ function loadDataFromSheet() {
         .then(data => {
             db = Array.isArray(data) ? data.map(item => ({
                 ...item,
-                date: cleanDate(item.date)
+                date: cleanDate(item.date),
+                type: (item.type && item.type.toUpperCase() === "DR") ? "DR" : "CR"
             })) : [];
             led.classList.remove('disconnected', 'saving', 'a9');
             led.classList.add('connected');
@@ -377,7 +389,7 @@ function saveData() {
         mob: document.getElementById('eMob').value || "-", 
         cat: document.getElementById('eCat').value, 
         desc: document.getElementById('eDesc').value || "-", 
-        amt: a, 
+        amt: parseFloat(a), 
         type: document.getElementById('eType').value 
     };
 
@@ -441,33 +453,32 @@ function refresh() {
     const monthYearStr = now.toLocaleDateString('ta-IN', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').innerText = monthYearStr;
 
-    let currentMonthDb = db.filter(t => {
-        if(!t.date) return false;
-        let d = new Date(cleanDate(t.date));
-        return d.getMonth() === currentMonthNum && d.getFullYear() === currentYearNum;
-    });
-
     let html = "", grand = 0;
     let tempSums = {}; cfg.cats.forEach(c => tempSums[c] = 0);
     
     let filtered = getFilteredData();
 
-    currentMonthDb.forEach(t => {
+    // மேலிருக்கும் Category Cards தொகை கணக்கீடு
+    filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let v = (t.type === "CR") ? amt : -amt; 
         if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v; 
         grand += v;
     });
 
+    // டேபிளில் டேட்டா காண்பித்தல்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let formattedDate = t.date ? cleanDate(t.date).split('-').reverse().join('/') : "";
+        let isCR = (t.type === 'CR');
+        
         html += `<tr class="border-b hover:bg-gray-100" style="font-size:${cfg.fsEnt}px">
             <td class="p-3">${formattedDate}</td>
             <td class="p-3">${t.mob}</td>
             <td class="p-3">${t.cat}</td>
             <td class="p-3 text-blue-700">${t.desc}</td>
-            <td class="p-3 text-right ${t.type==='CR'?'text-green-600':'text-red-600'}">₹${amt.toLocaleString()}</td>
+            <td class="p-3 font-bold ${isCR ? 'text-green-600' : 'text-red-600'}">${isCR ? 'CREDIT (+)' : 'DEBIT (-)'}</td>
+            <td class="p-3 text-right ${isCR ? 'text-green-600' : 'text-red-600'}">₹${amt.toLocaleString()}</td>
             <td class="p-3 flex justify-center gap-4">
                 ${cfg.swPen ? `<button onclick="editRow('${t.id}')" class="text-xl">🖋️</button>` : ''}
                 ${cfg.swTrDel ? `<button onclick="del('${t.id}')" class="text-xl text-red-600">✖</button>` : ''}
@@ -487,10 +498,22 @@ function refresh() {
 }
 
 function getFilteredData() {
-    const fD = document.getElementById('fDate').value, tD = document.getElementById('tDate').value, sM = document.getElementById('sMob').value, sDes = document.getElementById('sDesc').value.toLowerCase();
+    const fD = document.getElementById('fDate').value;
+    const tD = document.getElementById('tDate').value;
+    const sM = document.getElementById('sMob').value;
+    const sDes = document.getElementById('sDesc').value.toLowerCase();
+    
     return db.filter(t => {
         let cleanTDate = cleanDate(t.date);
-        const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat)), mDate = (!fD || cleanTDate >= fD) && (!tD || cleanTDate <= tD), mMob = (!sM || t.mob.includes(sM)), mDesc = (!sDes || t.desc.toLowerCase().includes(sDes)), mView = (currentViewMode === "BOTH" || t.type === currentViewMode);
+        const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat));
+        const mDate = (!fD || cleanTDate >= fD) && (!tD || cleanTDate <= tD);
+        const mMob = (!sM || t.mob.includes(sM));
+        const mDesc = (!sDes || t.desc.toLowerCase().includes(sDes));
+        
+        // CREDIT / DEBIT / BOTH ஃபில்டர் சரி செய்யப்பட்டது
+        let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
+        const mView = (currentViewMode === "BOTH" || itemType === currentViewMode);
+        
         return mCat && mDate && mMob && mDesc && mView;
     });
 }
@@ -634,7 +657,7 @@ function downloadPDF() {
     });
     doc.autoTable({ body: summaryData, startY: 40, theme: 'grid' });
     doc.text(`GRAND TOTAL: RS. ${grandTotal.toLocaleString()}`, 14, doc.lastAutoTable.finalY + 10);
-    doc.autoTable({ head: [['DATE', 'MOBILE', 'CATAGORY', 'DISCRIPTION', 'AMOUNT', 'TYPE']], body: filtered.map(t => [cleanDate(t.date).split('-').reverse().join('/'), t.mob, t.cat, t.desc, t.amt.toLocaleString(), t.type]), startY: doc.lastAutoTable.finalY + 20 });
+    doc.autoTable({ head: [['DATE', 'MOBILE', 'CATAGORY', 'DISCRIPTION', 'TYPE', 'AMOUNT']], body: filtered.map(t => [cleanDate(t.date).split('-').reverse().join('/'), t.mob, t.cat, t.desc, t.type, t.amt.toLocaleString()]), startY: doc.lastAutoTable.finalY + 20 });
     doc.save(`${cfg.title}_Report.pdf`);
 }
 
