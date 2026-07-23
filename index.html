@@ -447,6 +447,7 @@ function refresh() {
     db.sort((a, b) => new Date(b.date) - new Date(a.date));
     
     const now = new Date();
+    const currentYearMonth = now.toISOString().slice(0, 7); // "YYYY-MM"
     const monthYearStr = now.toLocaleDateString('ta-IN', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').innerText = monthYearStr;
 
@@ -455,10 +456,20 @@ function refresh() {
     
     let filtered = getFilteredData();
 
+    // டேஷ்போர்டு கார்டுகளுக்கு (Dashboard / Category Cards) தற்போதைய மாதத்தின் டேட்டா மட்டும் கணக்கிடப்படுகிறது
+    db.forEach(t => {
+        let cleanTDate = cleanDate(t.date);
+        if (cleanTDate.startsWith(currentYearMonth)) {
+            let amt = parseFloat(t.amt) || 0;
+            let v = (t.type === "CR") ? amt : -amt;
+            if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v;
+        }
+    });
+
+    // கீழிருக்கும் டேபிளுக்கு நாம் ஃபில்டர் செய்த டேட்டா கணக்கிடப்படும்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let v = (t.type === "CR") ? amt : -amt; 
-        if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v; 
         grand += v;
     });
 
