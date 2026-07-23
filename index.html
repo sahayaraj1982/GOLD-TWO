@@ -60,7 +60,6 @@
                     <button id="backBtn" onclick="location.reload()" class="bg-red-600 w-12 h-12 rounded-full border-4 border-black text-white text-2xl shadow-lg">⬅</button>
                     <div>
                         <h1 id="dispTitle" class="text-4xl italic uppercase" style="color: var(--n-col); text-shadow: 3px 3px 0 #000;">SAHAYARAJ-2026</h1>
-                        <!-- பேனரில் தேதி, நேரம் மற்றும் நடப்பு மாதம் காட்ட -->
                         <div class="flex items-center gap-3 mt-1">
                             <div id="liveDateTime" class="text-white font-bold" style="font-size: 14px; text-shadow: 1px 1px 0 #000;"></div>
                             <span class="text-yellow-300 font-bold">|</span>
@@ -282,6 +281,24 @@ function startClock() {
     setInterval(update, 1000);
 }
 
+// தேதியை பாதுகாப்பாக YYYY-MM-DD பார்மட்டுக்கு மாற்றும் வசதி
+function cleanDate(dateStr) {
+    if(!dateStr) return "";
+    let str = String(dateStr);
+    if(str.includes("T")) {
+        str = str.split("T")[0];
+    }
+    // ஒருவேளை முழு டேட் ஆப்ஜெக்ட் ஸ்டிரிங்காக வந்தால்
+    let d = new Date(str);
+    if(!isNaN(d.getTime())) {
+        let year = d.getFullYear();
+        let month = String(d.getMonth() + 1).padStart(2, '0');
+        let day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    return str.substring(0, 10);
+}
+
 function loadDataFromSheet() {
     const led = document.getElementById('sheetLed');
     if(!webAppUrl || !webAppUrl.startsWith("https://")) {
@@ -296,7 +313,10 @@ function loadDataFromSheet() {
     fetch(webAppUrl)
         .then(res => res.json())
         .then(data => {
-            db = Array.isArray(data) ? data : [];
+            db = Array.isArray(data) ? data.map(item => ({
+                ...item,
+                date: cleanDate(item.date)
+            })) : [];
             led.classList.remove('disconnected', 'saving', 'a9');
             led.classList.add('connected');
             init();
@@ -335,7 +355,7 @@ function editRow(id) {
     const item = db.find(x => x.id == id);
     if(item) {
         document.getElementById('editId').value = item.id;
-        document.getElementById('eDate').value = item.date;
+        document.getElementById('eDate').value = cleanDate(item.date);
         document.getElementById('eMob').value = item.mob === "-" ? "" : item.mob;
         document.getElementById('eCat').value = item.cat;
         document.getElementById('eDesc').value = item.desc === "-" ? "" : item.desc;
@@ -348,7 +368,7 @@ function editRow(id) {
 }
 
 function saveData() {
-    const d = document.getElementById('eDate').value, a = document.getElementById('eAmt').value, editId = document.getElementById('editId').value;
+    const d = cleanDate(document.getElementById('eDate').value), a = document.getElementById('eAmt').value, editId = document.getElementById('editId').value;
     if(!d || !a) return alert("DATE AND AMOUNT REQUIRED!");
     
     let entry = { 
@@ -414,28 +434,24 @@ function syncFullDataToSheet(actionType) {
 function refresh() {
     db.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    // நடப்பு மாதத்தைக் கண்டறிய (Current Month Name & Year)
     const now = new Date();
-    const currentMonthNum = now.getMonth(); // 0-11
+    const currentMonthNum = now.getMonth(); 
     const currentYearNum = now.getFullYear();
     
     const monthYearStr = now.toLocaleDateString('ta-IN', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').innerText = monthYearStr;
 
-    // நடப்பு மாதத் தரவுகளை மட்டும் வடிகட்டுதல் (Filter Current Month Data for Dashboard Cards & Total)
     let currentMonthDb = db.filter(t => {
         if(!t.date) return false;
-        let d = new Date(t.date);
+        let d = new Date(cleanDate(t.date));
         return d.getMonth() === currentMonthNum && d.getFullYear() === currentYearNum;
     });
 
     let html = "", grand = 0;
     let tempSums = {}; cfg.cats.forEach(c => tempSums[c] = 0);
     
-    // டேபிள் விவரங்களுக்கு ஃபில்டர் செய்யப்பட்ட டேட்டா
     let filtered = getFilteredData();
 
-    // நடப்பு மாத கார்டுகள் மற்றும் மொத்தத் தொகை கணக்கீடு (Current Month Only)
     currentMonthDb.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let v = (t.type === "CR") ? amt : -amt; 
@@ -443,11 +459,11 @@ function refresh() {
         grand += v;
     });
 
-    // டேபிளில் வரிசைகளை உருவாக்குதல்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
+        let formattedDate = t.date ? cleanDate(t.date).split('-').reverse().join('/') : "";
         html += `<tr class="border-b hover:bg-gray-100" style="font-size:${cfg.fsEnt}px">
-            <td class="p-3">${t.date.split('-').reverse().join('/')}</td>
+            <td class="p-3">${formattedDate}</td>
             <td class="p-3">${t.mob}</td>
             <td class="p-3">${t.cat}</td>
             <td class="p-3 text-blue-700">${t.desc}</td>
@@ -473,7 +489,8 @@ function refresh() {
 function getFilteredData() {
     const fD = document.getElementById('fDate').value, tD = document.getElementById('tDate').value, sM = document.getElementById('sMob').value, sDes = document.getElementById('sDesc').value.toLowerCase();
     return db.filter(t => {
-        const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat)), mDate = (!fD || t.date >= fD) && (!tD || t.date <= tD), mMob = (!sM || t.mob.includes(sM)), mDesc = (!sDes || t.desc.toLowerCase().includes(sDes)), mView = (currentViewMode === "BOTH" || t.type === currentViewMode);
+        let cleanTDate = cleanDate(t.date);
+        const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat)), mDate = (!fD || cleanTDate >= fD) && (!tD || cleanTDate <= tD), mMob = (!sM || t.mob.includes(sM)), mDesc = (!sDes || t.desc.toLowerCase().includes(sDes)), mView = (currentViewMode === "BOTH" || t.type === currentViewMode);
         return mCat && mDate && mMob && mDesc && mView;
     });
 }
@@ -528,7 +545,7 @@ function importData(event) {
         try {
             const data = JSON.parse(e.target.result);
             if(Array.isArray(data)) { 
-                db = data; 
+                db = data.map(item => ({ ...item, date: cleanDate(item.date) })); 
                 refresh(); 
                 syncFullDataToSheet("import");
                 alert("Data imported and synced with Google Sheet successfully!");
@@ -617,7 +634,7 @@ function downloadPDF() {
     });
     doc.autoTable({ body: summaryData, startY: 40, theme: 'grid' });
     doc.text(`GRAND TOTAL: RS. ${grandTotal.toLocaleString()}`, 14, doc.lastAutoTable.finalY + 10);
-    doc.autoTable({ head: [['DATE', 'MOBILE', 'CATAGORY', 'DISCRIPTION', 'AMOUNT', 'TYPE']], body: filtered.map(t => [t.date.split('-').reverse().join('/'), t.mob, t.cat, t.desc, t.amt.toLocaleString(), t.type]), startY: doc.lastAutoTable.finalY + 20 });
+    doc.autoTable({ head: [['DATE', 'MOBILE', 'CATAGORY', 'DISCRIPTION', 'AMOUNT', 'TYPE']], body: filtered.map(t => [cleanDate(t.date).split('-').reverse().join('/'), t.mob, t.cat, t.desc, t.amt.toLocaleString(), t.type]), startY: doc.lastAutoTable.finalY + 20 });
     doc.save(`${cfg.title}_Report.pdf`);
 }
 
