@@ -12,7 +12,7 @@
         body { background-color: #475569; font-family: 'Arial Black', sans-serif; overflow-x: hidden; }
         * { font-weight: 950 !important; }
         
-        .main-app-box { border: 10px solid var(--out); margin: 10px auto; border-radius: 40px; background: #f1f5f9; overflow-x: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .main-app-box { border: 10px solid var(--out); margin: 10px auto; border-radius: 40px; background: #f1f5f9; overflow-x: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 95%; max-width: 1400px; }
         .premium-header { background-color: var(--p-bg); padding: 25px; border-bottom: 10px solid var(--btm); position: relative; }
         
         #loginOverlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; color: gold; text-align: center; }
@@ -31,7 +31,6 @@
         .action-bar { display: flex; width: 100%; background: #000; padding: 8px; gap: 8px; }
         .action-btn { flex: 1; padding: 12px 0; border: 3px solid #fff; color: #fff; font-size: 14px; text-align: center; cursor: pointer; border-radius: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #444; }
         .action-btn.active { background: #ffeb3b; color: #000; border-color: #000; box-shadow: none; transform: translateY(4px); }
-        .bell-btn { background: #facc15; color: #000; }
 
         .g-led { width: 35px; height: 35px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; box-sizing: border-box; margin: 0 auto; }
         .g-led.disconnected { color: #ff3333; border: 2px solid #ff3333; box-shadow: 0 0 15px #ff3333, inset 0 0 5px #ff3333, 0 0 5px #fff; }
@@ -61,8 +60,8 @@
                     <button id="backBtn" onclick="location.reload()" class="bg-red-600 w-12 h-12 rounded-full border-4 border-black text-white text-2xl shadow-lg">⬅</button>
                     <div>
                         <h1 id="dispTitle" class="text-4xl italic uppercase" style="color: var(--n-col); text-shadow: 3px 3px 0 #000;">SAHAYARAJ-2026</h1>
-                        <div id="liveDateTime" class="text-yellow-300 font-bold" style="font-size: 14px;"></div>
-                        <p id="startDateDisplay" class="mb-1"></p>
+                        <!-- கடைசியாகப் போட்ட என்ட்ரி தேதியின் மாதம் மற்றும் ஆண்டு மட்டும் காட்ட -->
+                        <div id="lastEntryMonthDisplay" class="text-yellow-300 font-bold uppercase" style="font-size: 16px; letter-spacing: 1px;"></div>
                     </div>
                 </div>
                 <div class="flex items-center gap-6">
@@ -79,10 +78,6 @@
         </div>
 
         <div class="action-bar">
-            <div class="action-btn bell-btn" onclick="document.getElementById('bellStartDate').showPicker()">
-                🔔 BELL
-                <input type="date" id="bellStartDate" onchange="setStartingDate()" class="absolute opacity-0 pointer-events-none w-0">
-            </div>
             <div id="viewCR" onclick="setViewMode('CR')" class="action-btn active">CREDIT (+)</div>
             <div id="viewDR" onclick="setViewMode('DR')" class="action-btn">DEBIT (-)</div>
             <div id="viewBOTH" onclick="setViewMode('BOTH')" class="action-btn">BOTH</div>
@@ -202,7 +197,7 @@ function checkAccess() {
     if(isLogged === 'true') {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('appPage').classList.remove('invisible');
-        init();
+        loadDataFromSheet();
     }
 }
 
@@ -216,7 +211,7 @@ function verifyPass() {
             sessionStorage.setItem('saha_auth', 'true');
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appPage').classList.remove('invisible');
-            init();
+            loadDataFromSheet();
         } else {
             err.innerText = "PASSWORD EXPIRED ON " + authKeys[pin].split('-').reverse().join('/');
             err.classList.remove('hidden');
@@ -231,7 +226,7 @@ let cfg = JSON.parse(localStorage.getItem('saha_v69_cfg')) || {
     "title":"SAHAYARAJ-2026", "headCol":"#0c40bb", "nameCol":"#ffffff", "outCol":"#54301d", "btmCol":"#0b08d4", "catLetCol":"#e32b2b", "catNumCol":"#1e40af",
     "scrW":95, "fsDT":22, "fsCatL":14, "fsCatN":28, "fsEnt":14,
     "swBack":true, "swDate":true, "swClock":true, "swPen":true, "swTrDel":true, "swAllDel":true, "swPdf":true, "swWa":true, "swImp":true, "swExp":true,
-    "adminPin":"1020", "loginPin":"1002", "startingDate":"",
+    "adminPin":"1020", "loginPin":"1002",
     "cats":["GENERAL", "CASH", "BANK", "OTHER"]
 };
 
@@ -239,7 +234,7 @@ if(!cfg.cats || cfg.cats.length === 0) {
     cfg.cats = ["GENERAL", "CASH", "BANK", "OTHER"];
 }
 
-let db = JSON.parse(localStorage.getItem('saha_v69_db')) || [];
+let db = [];
 let activeFilters = [];
 let currentViewMode = "CR"; 
 const webAppUrl = "https://script.google.com/macros/s/AKfycbx6UShPDBdZIF_8tWb-7saymOVgspa8whCJN9PqQAnQxIxbZIZxpeZb3srY3fYIPpHjGw/exec";
@@ -261,29 +256,42 @@ function init() {
     document.getElementById('impBtn').style.display = cfg.swImp ? 'block' : 'none';
     document.getElementById('expBtn').style.display = cfg.swExp ? 'block' : 'none';
 
-    if(cfg.startingDate) { document.getElementById('startDateDisplay').innerText = "FROM: " + cfg.startingDate.split('-').reverse().join('/'); }
-    
     const todayStr = new Date().toISOString().split('T')[0];
     if(!document.getElementById('eDate').value) {
         document.getElementById('eDate').value = todayStr;
     }
 
-    startClock(); renderUI(); refresh();
-    checkSheetConnectionStatus();
+    renderUI(); 
+    refresh();
 }
 
-function checkSheetConnectionStatus() {
+// முழுவதுமாக கூகுள் ஷீட்டிலிருந்து மட்டுமே டேட்டா பெறப்படும் (Local Storage கிடையாது)
+function loadDataFromSheet() {
     const led = document.getElementById('sheetLed');
-    if(webAppUrl && webAppUrl.startsWith("https://")) {
-        led.classList.remove('disconnected');
-        led.classList.add('connected');
-    } else {
+    if(!webAppUrl || !webAppUrl.startsWith("https://")) {
         led.classList.remove('connected');
         led.classList.add('disconnected');
+        db = [];
+        init();
+        return;
     }
-}
 
-function startClock() { setInterval(() => { const now = new Date(); document.getElementById('liveDateTime').innerHTML = `${now.toLocaleDateString('en-GB')} | ${now.toLocaleTimeString('en-GB')}`; }, 1000); }
+    led.classList.add('saving', 'a9');
+    fetch(webAppUrl)
+        .then(res => res.json())
+        .then(data => {
+            db = Array.isArray(data) ? data : [];
+            led.classList.remove('disconnected', 'saving', 'a9');
+            led.classList.add('connected');
+            init();
+        })
+        .catch(() => {
+            led.classList.remove('connected', 'saving', 'a9');
+            led.classList.add('disconnected');
+            db = [];
+            init();
+        });
+}
 
 function renderUI() {
     const grid = document.getElementById('catGrid'), eSel = document.getElementById('eCat'), fList = document.getElementById('filterCatList');
@@ -308,7 +316,7 @@ function setViewMode(mode) {
 }
 
 function editRow(id) {
-    const item = db.find(x => x.id === id);
+    const item = db.find(x => x.id == id);
     if(item) {
         document.getElementById('editId').value = item.id;
         document.getElementById('eDate').value = item.date;
@@ -328,7 +336,7 @@ function saveData() {
     if(!d || !a) return alert("DATE AND AMOUNT REQUIRED!");
     
     let entry = { 
-        id: editId ? parseInt(editId) : Date.now(), 
+        id: editId ? editId : Date.now(), 
         date: d, 
         mob: document.getElementById('eMob').value || "-", 
         cat: document.getElementById('eCat').value, 
@@ -339,38 +347,67 @@ function saveData() {
 
     if(editId) {
         const idx = db.findIndex(x => x.id == editId);
-        db[idx] = entry;
+        if(idx > -1) db[idx] = entry;
         document.getElementById('editId').value = "";
         document.getElementById('saveBtn').innerText = "SAVE ✅";
         document.getElementById('saveBtn').classList.replace('bg-blue-600', 'bg-green-600');
-        syncWithSheet("sync");
+        syncFullDataToSheet("sync");
     } else {
         db.push(entry);
-        
-        const led = document.getElementById('sheetLed');
-        if(webAppUrl && webAppUrl.startsWith("https://")) {
-            led.classList.remove('disconnected');
-            led.classList.add('connected', 'saving', 'a9');
-            
-            fetch(webAppUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(entry)
-            }).then(res => res.json()).then(() => {
-                setTimeout(() => { led.classList.remove('saving', 'a9'); }, 1500);
-            }).catch(() => {
-                led.classList.remove('saving', 'a9');
-            });
-        }
+        sendSingleEntryToSheet(entry);
     }
 
-    localStorage.setItem('saha_v69_db', JSON.stringify(db));
     refresh();
     document.getElementById('eAmt').value = ""; document.getElementById('eDesc').value = "";
 }
 
+function sendSingleEntryToSheet(entry) {
+    const led = document.getElementById('sheetLed');
+    if(webAppUrl && webAppUrl.startsWith("https://")) {
+        led.classList.remove('disconnected');
+        led.classList.add('connected', 'saving', 'a9');
+        
+        fetch(webAppUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: "add", data: entry })
+        }).then(res => res.json()).then(() => {
+            setTimeout(() => { led.classList.remove('saving', 'a9'); }, 1500);
+        }).catch(() => {
+            led.classList.remove('saving', 'a9');
+        });
+    }
+}
+
+function syncFullDataToSheet(actionType) {
+    const led = document.getElementById('sheetLed');
+    if(webAppUrl && webAppUrl.startsWith("https://")) {
+        led.classList.add('saving', 'a9');
+        fetch(webAppUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: actionType, data: db })
+        }).then(res => res.json()).then(() => {
+            led.classList.remove('saving', 'a9');
+        }).catch(() => {
+            led.classList.remove('saving', 'a9');
+        });
+    }
+}
+
 function refresh() {
     db.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // கடைசியாகப் போடப்பட்ட என்ட்ரியின் மாதத்தை மட்டும் ஹெடரில் காட்ட
+    if(db.length > 0 && db[0].date) {
+        const lastDateObj = new Date(db[0].date);
+        const options = { month: 'long', year: 'numeric' };
+        const monthYearStr = lastDateObj.toLocaleDateString('ta-IN', options);
+        document.getElementById('lastEntryMonthDisplay').innerText = monthYearStr;
+    } else {
+        document.getElementById('lastEntryMonthDisplay').innerText = "NO ENTRIES YET";
+    }
+
     let html = "", grand = 0;
     let tempSums = {}; cfg.cats.forEach(c => tempSums[c] = 0);
     let filtered = getFilteredData();
@@ -387,8 +424,8 @@ function refresh() {
             <td class="p-3 text-blue-700">${t.desc}</td>
             <td class="p-3 text-right ${t.type==='CR'?'text-green-600':'text-red-600'}">₹${amt.toLocaleString()}</td>
             <td class="p-3 flex justify-center gap-4">
-                ${cfg.swPen ? `<button onclick="editRow(${t.id})" class="text-xl">🖋️</button>` : ''}
-                ${cfg.swTrDel ? `<button onclick="del(${t.id})" class="text-xl text-red-600">✖</button>` : ''}
+                ${cfg.swPen ? `<button onclick="editRow('${t.id}')" class="text-xl">🖋️</button>` : ''}
+                ${cfg.swTrDel ? `<button onclick="del('${t.id}')" class="text-xl text-red-600">✖</button>` : ''}
             </td>
         </tr>`;
     });
@@ -401,8 +438,8 @@ function refresh() {
 function getFilteredData() {
     const fD = document.getElementById('fDate').value, tD = document.getElementById('tDate').value, sM = document.getElementById('sMob').value, sDes = document.getElementById('sDesc').value.toLowerCase();
     return db.filter(t => {
-        const mBell = (!cfg.startingDate || t.date >= cfg.startingDate), mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat)), mDate = (!fD || t.date >= fD) && (!tD || t.date <= tD), mMob = (!sM || t.mob.includes(sM)), mDesc = (!sDes || t.desc.toLowerCase().includes(sDes)), mView = (currentViewMode === "BOTH" || t.type === currentViewMode);
-        return mBell && mCat && mDate && mMob && mDesc && mView;
+        const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat)), mDate = (!fD || t.date >= fD) && (!tD || t.date <= tD), mMob = (!sM || t.mob.includes(sM)), mDesc = (!sDes || t.desc.toLowerCase().includes(sDes)), mView = (currentViewMode === "BOTH" || t.type === currentViewMode);
+        return mCat && mDate && mMob && mDesc && mView;
     });
 }
 
@@ -457,9 +494,8 @@ function importData(event) {
             const data = JSON.parse(e.target.result);
             if(Array.isArray(data)) { 
                 db = data; 
-                localStorage.setItem('saha_v69_db', JSON.stringify(db)); 
                 refresh(); 
-                syncWithSheet("import");
+                syncFullDataToSheet("import");
                 alert("Data imported and synced with Google Sheet successfully!");
             }
         } catch(err) { 
@@ -468,24 +504,6 @@ function importData(event) {
     };
     if(event.target.files[0]) reader.readAsText(event.target.files[0]);
 }
-
-function syncWithSheet(actionType) {
-    const led = document.getElementById('sheetLed');
-    if(webAppUrl && webAppUrl.startsWith("https://")) {
-        led.classList.add('saving', 'a9');
-        fetch(webAppUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: actionType, data: db })
-        }).then(res => res.json()).then(() => {
-            led.classList.remove('saving', 'a9');
-        }).catch(() => {
-            led.classList.remove('saving', 'a9');
-        });
-    }
-}
-
-function setStartingDate() { let v = document.getElementById('bellStartDate').value; if(v) { cfg.startingDate = v; localStorage.setItem('saha_v69_cfg', JSON.stringify(cfg)); init(); } }
 
 function toggleFilter(cat) { 
     const btnAll = document.getElementById('btn_ALL');
@@ -504,10 +522,9 @@ function closeSettings() { document.getElementById('setModal').classList.add('hi
 
 function del(id) { 
     if(confirm("DELETE?")) { 
-        db = db.filter(x => x.id !== id); 
-        localStorage.setItem('saha_v69_db', JSON.stringify(db)); 
+        db = db.filter(x => x.id != id); 
         refresh(); 
-        syncWithSheet("sync");
+        syncFullDataToSheet("sync");
     } 
 }
 
@@ -531,10 +548,9 @@ function deleteAll() {
         
         setTimeout(() => {
             db = [];
-            localStorage.setItem('saha_v69_db', JSON.stringify(db));
             refresh();
-            syncWithSheet("sync");
-            alert("All data downloaded, deleted from app, and synced with Google Sheet!");
+            syncFullDataToSheet("delete_all");
+            alert("All data downloaded, deleted from app, and updated in Google Sheet!");
         }, 500);
     }
 }
@@ -551,71 +567,7 @@ function promptDelCat() {
 }
 
 function copyScriptCode() {
-    const scriptCode = `var WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6UShPDBdZIF_8tWb-7saymOVgspa8whCJN9PqQAnQxIxbZIZxpeZb3srY3fYIPpHjGw/exec";
-
-function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  
-  if (sheet.getLastRow() === 0) {
-    var headers = ["DATE", "MOBILE", "CATAGORY", "DISCRIPTION", "AMOUNT", "TYPE"];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    sheet.setFrozenRows(1);
-  }
-  
-  try {
-    var contents = JSON.parse(e.postData.contents);
-    var action = contents.action;
-    
-    if (action === "import" || action === "sync") {
-      var allData = contents.data;
-      if (sheet.getLastRow() > 1) {
-        sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).clearContent();
-      }
-      if (allData && allData.length > 0) {
-        var rowsToAppend = allData.map(function(item) {
-          return [
-            String(item.date || ""), 
-            String(item.mob || ""), 
-            String(item.cat || ""), 
-            String(item.desc || ""), 
-            Number(item.amt || 0), 
-            String(item.type || "")
-          ];
-        });
-        sheet.getRange(2, 1, rowsToAppend.length, rowsToAppend[0].length).setValues(rowsToAppend);
-      }
-      return ContentService.createTextOutput(JSON.stringify({"status": "success"}))
-             .setMimeType(ContentService.MimeType.JSON);
-    }
-    
-    sheet.appendRow([
-      String(contents.date || ""), 
-      String(contents.mob || ""), 
-      String(contents.cat || ""), 
-      String(contents.desc || ""), 
-      Number(contents.amt || 0), 
-      String(contents.type || "")
-    ]);
-    
-    return ContentService.createTextOutput(JSON.stringify({"status": "success"}))
-           .setMimeType(ContentService.MimeType.JSON);
-           
-  } catch(error) {
-    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": error.toString()}))
-           .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doGet(e) {
-  return ContentService.createTextOutput("App is running successfully!")
-         .setMimeType(ContentService.MimeType.TEXT);
-}`;
-
-    navigator.clipboard.writeText(scriptCode).then(() => {
-        alert("Google Apps Script கோடு காப்பி செய்யப்பட்டது! உங்கள் கூகுள் ஷீட்டில் இதை ஒட்டிக்கொள்ளலாம்.");
-    }).catch(err => {
-        alert("காப்பி செய்வதில் சிக்கல்: " + err);
-    });
+    alert("கீழே உள்ள ஆப் ஸ்கிரிப்ட் கூகுள் ஷீட்டில் ஏற்கனவே கொடுக்கப்பட்டுள்ளது.");
 }
 
 function downloadPDF() {
