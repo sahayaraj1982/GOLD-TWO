@@ -60,8 +60,12 @@
                     <button id="backBtn" onclick="location.reload()" class="bg-red-600 w-12 h-12 rounded-full border-4 border-black text-white text-2xl shadow-lg">⬅</button>
                     <div>
                         <h1 id="dispTitle" class="text-4xl italic uppercase" style="color: var(--n-col); text-shadow: 3px 3px 0 #000;">SAHAYARAJ-2026</h1>
-                        <!-- கடைசியாகப் போட்ட என்ட்ரி தேதியின் மாதம் மற்றும் ஆண்டு மட்டும் காட்ட -->
-                        <div id="lastEntryMonthDisplay" class="text-yellow-300 font-bold uppercase" style="font-size: 16px; letter-spacing: 1px;"></div>
+                        <!-- பேனரில் தேதி, நேரம் மற்றும் நடப்பு மாதம் காட்ட -->
+                        <div class="flex items-center gap-3 mt-1">
+                            <div id="liveDateTime" class="text-white font-bold" style="font-size: 14px; text-shadow: 1px 1px 0 #000;"></div>
+                            <span class="text-yellow-300 font-bold">|</span>
+                            <div id="currentMonthDisplay" class="text-yellow-300 font-bold uppercase" style="font-size: 14px; letter-spacing: 1px;"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-6">
@@ -261,11 +265,23 @@ function init() {
         document.getElementById('eDate').value = todayStr;
     }
 
+    startClock();
     renderUI(); 
     refresh();
 }
 
-// முழுவதுமாக கூகுள் ஷீட்டிலிருந்து மட்டுமே டேட்டா பெறப்படும் (Local Storage கிடையாது)
+function startClock() {
+    function update() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ta-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        const liveEl = document.getElementById('liveDateTime');
+        if(liveEl) liveEl.innerText = `${dateStr} | ${timeStr}`;
+    }
+    update();
+    setInterval(update, 1000);
+}
+
 function loadDataFromSheet() {
     const led = document.getElementById('sheetLed');
     if(!webAppUrl || !webAppUrl.startsWith("https://")) {
@@ -398,25 +414,38 @@ function syncFullDataToSheet(actionType) {
 function refresh() {
     db.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    // கடைசியாகப் போடப்பட்ட என்ட்ரியின் மாதத்தை மட்டும் ஹெடரில் காட்ட
-    if(db.length > 0 && db[0].date) {
-        const lastDateObj = new Date(db[0].date);
-        const options = { month: 'long', year: 'numeric' };
-        const monthYearStr = lastDateObj.toLocaleDateString('ta-IN', options);
-        document.getElementById('lastEntryMonthDisplay').innerText = monthYearStr;
-    } else {
-        document.getElementById('lastEntryMonthDisplay').innerText = "NO ENTRIES YET";
-    }
+    // நடப்பு மாதத்தைக் கண்டறிய (Current Month Name & Year)
+    const now = new Date();
+    const currentMonthNum = now.getMonth(); // 0-11
+    const currentYearNum = now.getFullYear();
+    
+    const monthYearStr = now.toLocaleDateString('ta-IN', { month: 'long', year: 'numeric' });
+    document.getElementById('currentMonthDisplay').innerText = monthYearStr;
+
+    // நடப்பு மாதத் தரவுகளை மட்டும் வடிகட்டுதல் (Filter Current Month Data for Dashboard Cards & Total)
+    let currentMonthDb = db.filter(t => {
+        if(!t.date) return false;
+        let d = new Date(t.date);
+        return d.getMonth() === currentMonthNum && d.getFullYear() === currentYearNum;
+    });
 
     let html = "", grand = 0;
     let tempSums = {}; cfg.cats.forEach(c => tempSums[c] = 0);
+    
+    // டேபிள் விவரங்களுக்கு ஃபில்டர் செய்யப்பட்ட டேட்டா
     let filtered = getFilteredData();
 
-    filtered.forEach(t => {
+    // நடப்பு மாத கார்டுகள் மற்றும் மொத்தத் தொகை கணக்கீடு (Current Month Only)
+    currentMonthDb.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let v = (t.type === "CR") ? amt : -amt; 
         if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v; 
         grand += v;
+    });
+
+    // டேபிளில் வரிசைகளை உருவாக்குதல்
+    filtered.forEach(t => {
+        let amt = parseFloat(t.amt) || 0;
         html += `<tr class="border-b hover:bg-gray-100" style="font-size:${cfg.fsEnt}px">
             <td class="p-3">${t.date.split('-').reverse().join('/')}</td>
             <td class="p-3">${t.mob}</td>
@@ -429,10 +458,16 @@ function refresh() {
             </td>
         </tr>`;
     });
+
     document.getElementById('resTable').innerHTML = html;
     document.getElementById('mainTotal').innerText = "₹" + grand.toLocaleString();
     document.getElementById('recCount').innerText = filtered.length;
-    cfg.cats.forEach(c => { if(document.getElementById('sum_'+c)) document.getElementById('sum_'+c).innerText = (tempSums[c] || 0).toLocaleString(); });
+    
+    cfg.cats.forEach(c => { 
+        if(document.getElementById('sum_'+c)) {
+            document.getElementById('sum_'+c).innerText = (tempSums[c] || 0).toLocaleString(); 
+        }
+    });
 }
 
 function getFilteredData() {
