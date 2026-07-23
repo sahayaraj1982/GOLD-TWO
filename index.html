@@ -456,27 +456,34 @@ function refresh() {
     
     let filtered = getFilteredData();
 
-    // டேஷ்போர்டு கார்டுகளுக்கு (Dashboard / Category Cards) தற்போதைய மாதத்தின் டேட்டா மட்டும் கணக்கிடப்படுகிறது
+    // டேஷ்போர்டு கார்டுகளுக்கு (Dashboard / Category Cards) நடப்பு மாதத்தின் தற்போதைய வியூ (CR/DR/BOTH) அடிப்படையில் கணக்கிடப்படுகிறது
     db.forEach(t => {
         let cleanTDate = cleanDate(t.date);
         if (cleanTDate.startsWith(currentYearMonth)) {
-            let amt = parseFloat(t.amt) || 0;
-            let v = (t.type === "CR") ? amt : -amt;
-            if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v;
+            let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
+            let matchesView = (currentViewMode === "BOTH" || itemType === currentViewMode);
+            
+            if (matchesView) {
+                let amt = parseFloat(t.amt) || 0;
+                let v = (itemType === "CR") ? amt : -amt;
+                if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v;
+            }
         }
     });
 
     // கீழிருக்கும் டேபிளுக்கு நாம் ஃபில்டர் செய்த டேட்டா கணக்கிடப்படும்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
-        let v = (t.type === "CR") ? amt : -amt; 
+        let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
+        let v = (itemType === "CR") ? amt : -amt; 
         grand += v;
     });
 
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let formattedDate = t.date ? cleanDate(t.date).split('-').reverse().join('/') : "";
-        let isCR = (t.type === 'CR');
+        let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
+        let isCR = (itemType === 'CR');
         
         html += `<tr class="border-b hover:bg-gray-100" style="font-size:${cfg.fsEnt}px">
             <td class="p-3">${formattedDate}</td>
@@ -509,10 +516,22 @@ function getFilteredData() {
     const sM = document.getElementById('sMob').value;
     const sDes = document.getElementById('sDesc').value.toLowerCase();
     
+    const now = new Date();
+    const currentYearMonth = now.toISOString().slice(0, 7); // "YYYY-MM"
+    
     return db.filter(t => {
         let cleanTDate = cleanDate(t.date);
+        
+        // டேபிளில் எப்போதும் நடப்பு மாதத்தின் (Current Month) தரவுகள் மட்டுமே முதல் பார்வையில் வரும்படி அமைக்கப்பட்டுள்ளது
+        const isCurrentMonth = cleanTDate.startsWith(currentYearMonth);
+        
         const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat));
-        const mDate = (!fD || cleanTDate >= fD) && (!tD || cleanTDate <= tD);
+        
+        // தேதி தேர்வு (From/To) செய்யப்பட்டிருந்தால் அதற்கேற்ப வரும், இல்லையெனில் நடப்பு மாத டேட்டா மட்டும் காட்டும்
+        const mDate = (fD || tD) ? 
+            ((!fD || cleanTDate >= fD) && (!tD || cleanTDate <= tD)) : 
+            isCurrentMonth;
+            
         const mMob = (!sM || t.mob.includes(sM));
         const mDesc = (!sDes || t.desc.toLowerCase().includes(sDes));
         
