@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAHAYARAJ-2026</title>
+    <title>INDIAN-2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -43,7 +43,7 @@
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 class="text-3xl italic">SAHAYARAJ-2026</h2>
+        <h2 class="text-3xl italic">INDIAN-2026</h2>
         <p class="mt-2 text-sm">SECURE ACCESS PANEL</p>
         <p class="mt-2 text-sm">9361203202</p>
         <input type="password" id="passInput" placeholder="ENTER PASSWORD">
@@ -59,7 +59,7 @@
                 <div class="flex items-center gap-4">
                     <button id="backBtn" onclick="location.reload()" class="bg-red-600 w-12 h-12 rounded-full border-4 border-black text-white text-2xl shadow-lg">⬅</button>
                     <div>
-                        <h1 id="dispTitle" class="text-4xl italic uppercase" style="color: var(--n-col); text-shadow: 3px 3px 0 #000;">SAHAYARAJ-2026</h1>
+                        <h1 id="dispTitle" class="text-4xl italic uppercase" style="color: var(--n-col); text-shadow: 3px 3px 0 #000;">INDIAN-2026</h1>
                         <div class="flex items-center gap-3 mt-1">
                             <div id="liveDateTime" class="text-white font-bold" style="font-size: 14px; text-shadow: 1px 1px 0 #000;"></div>
                             <span class="text-yellow-300 font-bold">|</span>
@@ -447,7 +447,6 @@ function refresh() {
     db.sort((a, b) => new Date(b.date) - new Date(a.date));
     
     const now = new Date();
-    const currentYearMonth = now.toISOString().slice(0, 7); // "YYYY-MM"
     const monthYearStr = now.toLocaleDateString('ta-IN', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').innerText = monthYearStr;
 
@@ -456,26 +455,15 @@ function refresh() {
     
     let filtered = getFilteredData();
 
-    // டேஷ்போர்டு கார்டுகளுக்கு (Dashboard / Category Cards) நடப்பு மாதத்தின் தற்போதைய வியூ (CR/DR/BOTH) அடிப்படையில் கணக்கிடப்படுகிறது
-    db.forEach(t => {
-        let cleanTDate = cleanDate(t.date);
-        if (cleanTDate.startsWith(currentYearMonth)) {
-            let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
-            let matchesView = (currentViewMode === "BOTH" || itemType === currentViewMode);
-            
-            if (matchesView) {
-                let amt = parseFloat(t.amt) || 0;
-                let v = (itemType === "CR") ? amt : -amt;
-                if(tempSums.hasOwnProperty(t.cat)) tempSums[t.cat] += v;
-            }
-        }
-    });
-
-    // கீழிருக்கும் டேபிளுக்கு நாம் ஃபில்டர் செய்த டேட்டா கணக்கிடப்படும்
+    // ஃபில்டர் செய்யப்பட்ட டேட்டாவை அடிப்படையாகக் கொண்டு கேட்டகிரி பெட்டிகளுக்கான தொகையைக் கணக்கிடுதல்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
-        let v = (itemType === "CR") ? amt : -amt; 
+        let v = (itemType === "CR") ? amt : -amt;
+        
+        if(tempSums.hasOwnProperty(t.cat)) {
+            tempSums[t.cat] += v;
+        }
         grand += v;
     });
 
@@ -521,13 +509,8 @@ function getFilteredData() {
     
     return db.filter(t => {
         let cleanTDate = cleanDate(t.date);
-        
-        // டேபிளில் எப்போதும் நடப்பு மாதத்தின் (Current Month) தரவுகள் மட்டுமே முதல் பார்வையில் வரும்படி அமைக்கப்பட்டுள்ளது
         const isCurrentMonth = cleanTDate.startsWith(currentYearMonth);
-        
         const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat));
-        
-        // தேதி தேர்வு (From/To) செய்யப்பட்டிருந்தால் அதற்கேற்ப வரும், இல்லையெனில் நடப்பு மாத டேட்டா மட்டும் காட்டும்
         const mDate = (fD || tD) ? 
             ((!fD || cleanTDate >= fD) && (!tD || cleanTDate <= tD)) : 
             isCurrentMonth;
