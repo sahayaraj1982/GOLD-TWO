@@ -201,15 +201,15 @@ const authKeys = {
     "90800": "2028-06-15",
     "KANAGU": "2028-05-30",
     "MADURAI": "2027-05-30",
+    "INDIAN": "2028-12-31",
     "SAHA02": "2026-12-31",
     "SAHA03": "2027-01-10",
     "SAHA04": "2028-06-14",
-    "INDIA": "2027-05-30",
-    "SAHA": "2027-05-30",
+    "INDIA": "2027-05-30"
 };
 
 function checkAccess() {
-    const isLogged = sessionStorage.getItem('saha_auth');
+    const isLogged = sessionStorage.getItem('indian_auth');
     if(isLogged === 'true') {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('appPage').classList.remove('invisible');
@@ -224,7 +224,7 @@ function verifyPass() {
 
     if(authKeys[pin]) {
         if(today <= authKeys[pin]) {
-            sessionStorage.setItem('saha_auth', 'true');
+            sessionStorage.setItem('indian_auth', 'true');
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appPage').classList.remove('invisible');
             loadDataFromSheet();
@@ -238,16 +238,16 @@ function verifyPass() {
     }
 }
 
-let cfg = JSON.parse(localStorage.getItem('saha_v69_cfg')) || {
+let cfg = JSON.parse(localStorage.getItem('indian_v26_cfg')) || {
     "title":"INDIAN-2026", "headCol":"#0c40bb", "nameCol":"#ffffff", "outCol":"#54301d", "btmCol":"#0b08d4", "catLetCol":"#e32b2b", "catNumCol":"#1e40af",
     "scrW":95, "fsDT":22, "fsCatL":14, "fsCatN":28, "fsEnt":14,
     "swBack":true, "swDate":true, "swClock":true, "swPen":true, "swTrDel":true, "swAllDel":true, "swPdf":true, "swWa":true, "swImp":true, "swExp":true,
     "adminPin":"1020", "loginPin":"1002",
-    "cats":["GENERAL", "CASH", "BANK", "OTHER"]
+    "cats":["FINANCE", "TICKET", "RO", "OTHER"]
 };
 
 if(!cfg.cats || cfg.cats.length === 0) {
-    cfg.cats = ["GENERAL", "CASH", "BANK", "OTHER"];
+    cfg.cats = ["FINANCE", "TICKET", "RO", "OTHER"];
 }
 
 let db = [];
@@ -296,10 +296,25 @@ function startClock() {
 
 function cleanDate(dateStr) {
     if(!dateStr) return "";
-    let str = String(dateStr);
+    let str = String(dateStr).trim();
+    
     if(str.includes("T")) {
         str = str.split("T")[0];
     }
+    
+    if(str.includes("/")) {
+        let parts = str.split("/");
+        if(parts.length === 3) {
+            let year = parts[2].length === 2 ? "20" + parts[2] : parts[2];
+            return `${year}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+    } else if(str.includes("-")) {
+        let parts = str.split("-");
+        if(parts[0].length <= 2 && parts[2].length === 4) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+    }
+
     let d = new Date(str);
     if(!isNaN(d.getTime())) {
         let year = d.getFullYear();
@@ -307,6 +322,7 @@ function cleanDate(dateStr) {
         let day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
+    
     return str.substring(0, 10);
 }
 
@@ -324,8 +340,9 @@ function loadDataFromSheet() {
     fetch(webAppUrl)
         .then(res => res.json())
         .then(data => {
-            db = Array.isArray(data) ? data.map(item => ({
+            db = Array.isArray(data) ? data.map((item, idx) => ({
                 ...item,
+                id: item.id ? String(item.id) : String(Date.now() + idx),
                 date: cleanDate(item.date),
                 type: item.type ? String(item.type).toUpperCase() : "CR"
             })) : [];
@@ -364,7 +381,7 @@ function setViewMode(mode) {
 }
 
 function editRow(id) {
-    const item = db.find(x => x.id == id);
+    const item = db.find(x => String(x.id) === String(id));
     if(item) {
         document.getElementById('editId').value = item.id;
         document.getElementById('eDate').value = cleanDate(item.date);
@@ -376,6 +393,8 @@ function editRow(id) {
         document.getElementById('saveBtn').innerText = "UPDATE 🖋️";
         document.getElementById('saveBtn').classList.replace('bg-green-600', 'bg-blue-600');
         window.scrollTo({top: 0, behavior: 'smooth'});
+    } else {
+        alert("Record not found for editing!");
     }
 }
 
@@ -384,7 +403,7 @@ function saveData() {
     if(!d || !a) return alert("DATE AND AMOUNT REQUIRED!");
     
     let entry = { 
-        id: editId ? editId : Date.now(), 
+        id: editId ? String(editId) : String(Date.now()), 
         date: d, 
         mob: document.getElementById('eMob').value || "-", 
         cat: document.getElementById('eCat').value, 
@@ -394,8 +413,12 @@ function saveData() {
     };
 
     if(editId) {
-        const idx = db.findIndex(x => x.id == editId);
-        if(idx > -1) db[idx] = entry;
+        const idx = db.findIndex(x => String(x.id) === String(editId));
+        if(idx > -1) {
+            db[idx] = entry;
+        } else {
+            db.push(entry);
+        }
         document.getElementById('editId').value = "";
         document.getElementById('saveBtn').innerText = "SAVE ✅";
         document.getElementById('saveBtn').classList.replace('bg-blue-600', 'bg-green-600');
@@ -455,7 +478,6 @@ function refresh() {
     
     let filtered = getFilteredData();
 
-    // ஃபில்டர் செய்யப்பட்ட டேட்டாவை அடிப்படையாகக் கொண்டு கேட்டகிரி பெட்டிகளுக்கான தொகையைக் கணக்கிடுதல்
     filtered.forEach(t => {
         let amt = parseFloat(t.amt) || 0;
         let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
@@ -472,6 +494,7 @@ function refresh() {
         let formattedDate = t.date ? cleanDate(t.date).split('-').reverse().join('/') : "";
         let itemType = (t.type && t.type.toUpperCase() === "DR") ? "DR" : "CR";
         let isCR = (itemType === 'CR');
+        let safeId = String(t.id);
         
         html += `<tr class="border-b hover:bg-gray-100" style="font-size:${cfg.fsEnt}px">
             <td class="p-3">${formattedDate}</td>
@@ -481,8 +504,8 @@ function refresh() {
             <td class="p-3 font-bold ${isCR ? 'text-green-600' : 'text-red-600'}">${isCR ? 'CREDIT (+)' : 'DEBIT (-)'}</td>
             <td class="p-3 text-right ${isCR ? 'text-green-600' : 'text-red-600'}">₹${amt.toLocaleString()}</td>
             <td class="p-3 flex justify-center gap-4">
-                ${cfg.swPen ? `<button onclick="editRow('${t.id}')" class="text-xl">🖋️</button>` : ''}
-                ${cfg.swTrDel ? `<button onclick="del('${t.id}')" class="text-xl text-red-600">✖</button>` : ''}
+                ${cfg.swPen ? `<button onclick="editRow('${safeId}')" class="text-xl">🖋️</button>` : ''}
+                ${cfg.swTrDel ? `<button onclick="del('${safeId}')" class="text-xl text-red-600">✖</button>` : ''}
             </td>
         </tr>`;
     });
@@ -505,7 +528,7 @@ function getFilteredData() {
     const sDes = document.getElementById('sDesc').value.toLowerCase();
     
     const now = new Date();
-    const currentYearMonth = now.toISOString().slice(0, 7); // "YYYY-MM"
+    const currentYearMonth = now.toISOString().slice(0, 7); 
     
     return db.filter(t => {
         let cleanTDate = cleanDate(t.date);
@@ -560,7 +583,7 @@ function saveSettings() {
     cfg.swClock = document.getElementById('swClock').checked; cfg.swPen = document.getElementById('swPen').checked;
     cfg.swTrDel = document.getElementById('swTrDel').checked; cfg.swAllDel = document.getElementById('swAllDel').checked;
     cfg.adminPin = document.getElementById('setAdminPin').value; cfg.loginPin = document.getElementById('setLoginPin').value;
-    localStorage.setItem('saha_v69_cfg', JSON.stringify(cfg)); location.reload();
+    localStorage.setItem('indian_v26_cfg', JSON.stringify(cfg)); location.reload();
 }
 
 function exportData() {
@@ -575,7 +598,7 @@ function importData(event) {
         try {
             const data = JSON.parse(e.target.result);
             if(Array.isArray(data)) { 
-                db = data.map(item => ({ ...item, date: cleanDate(item.date) })); 
+                db = data.map((item, idx) => ({ ...item, id: item.id ? String(item.id) : String(Date.now() + idx), date: cleanDate(item.date) })); 
                 refresh(); 
                 syncFullDataToSheet("import");
                 alert("Data imported and synced with Google Sheet successfully!");
@@ -604,7 +627,7 @@ function closeSettings() { document.getElementById('setModal').classList.add('hi
 
 function del(id) { 
     if(confirm("DELETE?")) { 
-        db = db.filter(x => x.id != id); 
+        db = db.filter(x => String(x.id) !== String(id)); 
         refresh(); 
         syncFullDataToSheet("sync");
     } 
@@ -639,13 +662,13 @@ function deleteAll() {
 
 function promptAddCat() {
     const name = prompt("ENTER NEW CATEGORY NAME:").trim().toUpperCase();
-    if(name && !cfg.cats.includes(name)) { cfg.cats.push(name); localStorage.setItem('saha_v69_cfg', JSON.stringify(cfg)); init(); } else if(name) { alert("DUPLICATE OR INVALID NAME!"); }
+    if(name && !cfg.cats.includes(name)) { cfg.cats.push(name); localStorage.setItem('indian_v26_cfg', JSON.stringify(cfg)); init(); } else if(name) { alert("DUPLICATE OR INVALID NAME!"); }
 }
 
 function promptDelCat() {
     if(cfg.cats.length === 0) return alert("NO CATEGORIES TO DELETE!");
     const list = cfg.cats.join("\n"), name = prompt("TYPE CATEGORY NAME TO DELETE:\n\n" + list).trim().toUpperCase();
-    if(cfg.cats.includes(name)) { if(confirm(`SURE TO DELETE ${name}?`)) { cfg.cats = cfg.cats.filter(c => c !== name); localStorage.setItem('saha_v69_cfg', JSON.stringify(cfg)); init(); } } else if(name) { alert("CATEGORY NOT FOUND!"); }
+    if(cfg.cats.includes(name)) { if(confirm(`SURE TO DELETE ${name}?`)) { cfg.cats = cfg.cats.filter(c => c !== name); localStorage.setItem('indian_v26_cfg', JSON.stringify(cfg)); init(); } } else if(name) { alert("CATEGORY NOT FOUND!"); }
 }
 
 function copyScriptCode() {
